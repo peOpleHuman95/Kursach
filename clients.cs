@@ -1,18 +1,23 @@
 namespace Security_agent
 {
-    public abstract class ClientLegalEntity
+    public abstract class Agreement
+    {
+        public string? NumberAgreement {get; set;}
+        public DateTime? DateAgreement {get; protected set;}
+        public DateTime? DateEndContract {get; protected set;}
+        public DateTime DateEvent {get; set;}
+        public decimal Sum {get; set;}
+        public DateTime? DatePayment {get; set;}
+        public string? NumberDocument {get; set;}
+
+    }
+    public abstract class ClientLegalEntity : Agreement
     {
         // Адрес клиента
         public string NameFirm {get; private set;}
         public string Address {get; private set;}
-        public string NumberAgreement {get; private set;}
-        public DateTime? DateAgreement {get; private set;}
-        public DateTime? DateEndContract {get; private set;}
-        public DateTime DateEvent {get; set;}
-
-        public decimal Sum {get; set;}
-        public DateTime? DatePayment {get; set;}
-        public string? NumberDocument {get; set;}
+        
+        
         protected ClientLegalEntity(
             string nameFirm,
             string address,
@@ -48,5 +53,14 @@ namespace Security_agent
             if (newNameFirm == NameFirm) throw new InvalidOperationException("Название фирмы осталось тем же.");
             NameFirm = newNameFirm;
         }
+    }
+    public abstract class ClientIndividual :Agreement
+    {
+        public string FirstName {get; set;} = "";
+        public string LastName {get; set;} = "";
+        public string MiddleName {get; set;} = "";
+        public string ClientAddress {get; set;} = "";
+        public string ClientPassport {get; set;} = "";
+
     }
 }
