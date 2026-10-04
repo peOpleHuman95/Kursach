@@ -71,7 +71,7 @@ namespace Security_agent
             if (guard == null) throw new ArgumentNullException(nameof(guard));
             if (!guard.Position.IsGuard) throw new InvalidOperationException("Дежурить может только охранник.");
             if (guard.DismissalDate.HasValue && StartTime.Date >= guard.DismissalDate.Value.Date) 
-                throw new InvalidOperationException("охранник уже уволен на момент дежурства.");
+                throw new InvalidOperationException("Охранник уже уволен на момент дежурства.");
         }
     }
 
