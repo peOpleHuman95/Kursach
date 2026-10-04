@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Security_agent
 {
-    
+    // Общие данные физических и юридических лиц
     public abstract class Client
     {
         public string Address {get; private set;} = "";
@@ -12,6 +12,7 @@ namespace Security_agent
         {
             ChangeAddress(address);
         }
+        // Изменение адреса с проверкой заполнения
         public void ChangeAddress(string newAddress)
         {
             if (string.IsNullOrWhiteSpace(newAddress)) throw new ArgumentException("Адрес не может быть пустым", nameof(newAddress));
@@ -22,7 +23,7 @@ namespace Security_agent
 
         }
     }
-    // Юридическое лицо
+    // Клиент - Юридическое лицо
     public class ClientLegalEntity : Client
     {
 
@@ -33,7 +34,7 @@ namespace Security_agent
            ChangeNameFirm(nameFirm);
         
         }
-       
+       // Изменение названия фирмы с проверкой заполнения
         public void ChangeNameFirm(string newNameFirm)
         {
             if (string.IsNullOrWhiteSpace(newNameFirm)) throw new ArgumentException("Название не может быть пустым", nameof(newNameFirm));
@@ -43,7 +44,7 @@ namespace Security_agent
             NameFirm = newNameFirm;
         }
     } 
-    // Физическое лицо
+    // Клиент - Физическое лицо
     public class ClientIndividual : Client
     {
         public string FirstName {get; private set;} = "";
@@ -61,6 +62,7 @@ namespace Security_agent
         {
             UpdatePersonalData(firstName, lastName, middleName, passport);
         }
+        // Обновление ФИО и паспортных данных клиента
         public void UpdatePersonalData(
             string firstName,
             string lastName,
@@ -69,7 +71,7 @@ namespace Security_agent
         {
             if (string.IsNullOrWhiteSpace(firstName)) throw new ArgumentException("Имя не должно быть пустым.", nameof(firstName));
             if (string.IsNullOrWhiteSpace(lastName)) throw new ArgumentException("Фамилия не должна быть пустой.", nameof(lastName));
-            if (string.IsNullOrWhiteSpace(passport)) throw new ArgumentException("Паспортные дынные не должны быть пустыми.", nameof(passport));
+            if (string.IsNullOrWhiteSpace(passport)) throw new ArgumentException("Паспортные данные не должны быть пустыми.", nameof(passport));
 
             FirstName = firstName.Trim();
             LastName = lastName.Trim();
@@ -78,7 +80,7 @@ namespace Security_agent
         }
     }
 
-    // Один платеж
+    // Один платеж по договору
     public class Payment
     {
         public decimal Sum {get;}
@@ -86,7 +88,7 @@ namespace Security_agent
         public string NumberDocument {get;}
         public Payment (decimal sum, DateTime datePayment, string numberDocument)
         {
-            if (sum <= 0) throw new ArgumentException("Сумма платежей должна быть положительной.", nameof(sum));
+            if (sum <= 0) throw new ArgumentException("Сумма платежа должна быть положительной.", nameof(sum));
             if (string.IsNullOrWhiteSpace(numberDocument)) throw new ArgumentException("Номер платежного документа не должен быть пустым.", nameof(numberDocument));
             Sum = sum;
             DatePayment = datePayment;
@@ -94,18 +96,18 @@ namespace Security_agent
         }
     }
 
-    // Общие данные договора
+    // Общие данные договора и учет платежей
     public abstract class Agreement
     {
         public Client Client {get;}
         public string NumberAgreement {get;}
-        public DateTime DateAgreement {get; protected set;}
-        public DateTime DateEndContract {get; protected set;}
+        public DateTime DateAgreement {get; }
+        public DateTime DateEndContract {get; }
         
         private readonly List<Payment> payments = new List<Payment>();
         public IReadOnlyList<Payment> Payments => payments.AsReadOnly();
 
-        //Сумма всех внесенных платежей
+        //Сумма всех внесенных платежей по договору
         public decimal PaidAmount => payments.Sum(payment => payment.Sum);
 
         protected Agreement(
@@ -115,7 +117,7 @@ namespace Security_agent
             DateTime dateEndContract)
         {
             if (client == null) throw new ArgumentNullException(nameof(client));
-            if (string.IsNullOrWhiteSpace(numberAgreement)) throw new ArgumentException("Номер договра не может быть пустым", nameof(numberAgreement));
+            if (string.IsNullOrWhiteSpace(numberAgreement)) throw new ArgumentException("Номер договора не может быть пустым", nameof(numberAgreement));
             if (dateEndContract < dateAgreement) throw new ArgumentException("Дата окончания не может быть раньше даты заключения.", nameof(dateEndContract));
 
             Client = client;
@@ -124,15 +126,25 @@ namespace Security_agent
             DateEndContract = dateEndContract;
 
         }
+        // Добавление платежа с проверкой повтора по номеру и дате документа
         public void AddPayment(Payment payment)
         {
-            if (payment == null) throw new ArgumentNullException(nameof(payment));
-            if (payments.Contains(payment)) throw new InvalidOperationException("Этот платеж уже добавлен в договор.");
+            if (payment == null)
+                throw new ArgumentNullException(nameof(payment));
+
+            if (payments.Any(existing =>
+                existing.NumberDocument == payment.NumberDocument &&
+                existing.DatePayment.Date == payment.DatePayment.Date))
+            {
+                throw new InvalidOperationException(
+                    "Платёж с таким номером и датой уже добавлен.");
+            }
+
             payments.Add(payment);
         }
     }
 
-    // Договор охраны для разового мероприятия
+    // Договор охраны для разового мероприятия для любого вида клиента
     public class EventAgreement : Agreement
     {
         public string EventAddress {get;}

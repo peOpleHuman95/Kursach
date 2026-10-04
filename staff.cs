@@ -5,11 +5,11 @@ namespace Security_agent
 {
     public class Position
     {  
-        // Должность
+        // Название должности
         public string Name {get; private set;}
         // Оклад
         public decimal BaseSalary {get; private set;}
-        // Явялется ли охраником
+        // Является ли должность охранной
         public bool IsGuard {get; private set;}
         public Position(string name, decimal baseSalary, bool isGuard)
         {
@@ -29,11 +29,12 @@ namespace Security_agent
 
         // Должность и зарплата
         public Position Position {get; private set;}
-        
+        // Персональная надбавка к окладу
         public decimal PersonalAllowance {get; set;}
+        // Зарплата: оклад + надбавка
         public decimal Salary => Position.BaseSalary  + PersonalAllowance;
 
-        // право на ношение оружия
+        // Право на ношение оружия
         public bool CanCarryWeapon {get; private set;}
         public Weapon? AssignedWeapon { get; private set; }
 
@@ -48,13 +49,16 @@ namespace Security_agent
         public string Inn {get; set;} = "";
         public string PfrNumber {get; set;} = "";
 
-        // Увольнение и срок хранения
+        // Дата увольнения
         public DateTime? DismissalDate {get; private set;}
+        // Указана дата увольнения
         public bool IsDismissed => DismissalDate.HasValue;
+        // Дата окончания обязательного пятилетнего хранения сведений
         public DateTime? KeepUntil => DismissalDate?.AddYears(5);
         
         public EmployeeDocuments Documents {get;}
 
+        // Создание сотрудника с проверкой должности, документов и судимости
         public Staff(Position position, EmployeeDocuments documents)
         {
            if (position == null) throw new ArgumentNullException(nameof(position));
@@ -90,7 +94,7 @@ namespace Security_agent
             }
             CanCarryWeapon = allowed;
         }
-        // Назначенное оружие
+        // Выдача оружия сотруднику с проверкой разрешения
         public void AssignWeapon(Weapon weapon)
         {
             if (weapon == null)
@@ -114,7 +118,7 @@ namespace Security_agent
             AssignedWeapon?.ReturnFrom(this);
             AssignedWeapon = null;
         }
-        // Назначеное спецсредство
+        // Выдача спецсредства работающему охраннику
         public void AssignEquipment(SpecialEquipment item)
         {
             if (item == null)
@@ -123,7 +127,7 @@ namespace Security_agent
             }
             if (IsDismissed || !Position.IsGuard)
             {
-                throw new InvalidOperationException("Спецсредства можно выдать только работающим охраникам.");
+                throw new InvalidOperationException("Спецсредства можно выдать только работающим охранникам.");
             }
             if (!equipment.Contains(item))
             {
@@ -140,7 +144,7 @@ namespace Security_agent
              equipment.Remove(item);
              }
         }
-        // Увольнение
+        // Фиксация даты увольнения
         public void Dismiss (DateTime date)
         {
             if (IsDismissed)
