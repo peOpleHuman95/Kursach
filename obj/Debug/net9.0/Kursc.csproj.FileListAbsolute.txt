@@ -1,0 +1,5 @@
+C:\Users\Asus\Desktop\NSTU\Прога\2 курс\Kursc\obj\Debug\net9.0\Kursc.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Asus\Desktop\NSTU\Прога\2 курс\Kursc\obj\Debug\net9.0\Kursc.AssemblyInfoInputs.cache
+C:\Users\Asus\Desktop\NSTU\Прога\2 курс\Kursc\obj\Debug\net9.0\Kursc.AssemblyInfo.cs
+C:\Users\Asus\Desktop\NSTU\Прога\2 курс\Kursc\obj\Debug\net9.0\Kursc.csproj.CoreCompileInputs.cache
+C:\Users\Asus\Desktop\NSTU\Прога\2 курс\Kursc\obj\Debug\net9.0\Kursc.sourcelink.json
