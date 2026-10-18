@@ -151,7 +151,14 @@ namespace Security_agent
             {
                 if (saved == null || saved.Id <=0 || positions.ContainsKey(saved.Id))
                     throw new InvalidDataException("Некорректный идентификатор должности");
-                
+                    
+                if (string.IsNullOrWhiteSpace(saved.Name))
+
+                    throw new InvalidDataException($"У должности {saved.Id} не указано название.");
+
+                if (saved.BaseSalary < 0)
+                    throw new InvalidDataException($"У должности {saved.Id} указан отрицательный оклад.");     
+
                 var position = new Position(saved.Name, saved.BaseSalary, saved.IsGuard);
 
                 positions.Add(saved.Id, position);

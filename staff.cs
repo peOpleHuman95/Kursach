@@ -13,7 +13,12 @@ namespace Security_agent
         public bool IsGuard {get; private set;}
         public Position(string name, decimal baseSalary, bool isGuard)
         {
-            Name = name;
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException("Название должности не должно быть пустым.",nameof(name));
+                
+            if (baseSalary < 0)
+                throw new ArgumentOutOfRangeException(nameof(baseSalary), "Оклад не может быть отрицательным.");
+            Name = name.Trim();
             BaseSalary = baseSalary;
             IsGuard = isGuard;
 
