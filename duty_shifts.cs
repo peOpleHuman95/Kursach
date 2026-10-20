@@ -38,16 +38,29 @@ namespace Security_agent
             ObjectAgreement agreement,
             Staff guard,
             DateTime startTime)
+            : this(agreement, guard, startTime, false)
         {
+        }
+        private DutyShift(
+            ObjectAgreement agreement,
+            Staff guard,
+            DateTime startTime,
+            bool restoring)
+            {
             if (agreement == null) throw new ArgumentNullException(nameof(agreement));
+            if (guard == null) throw new ArgumentNullException(nameof(guard));
 
             // Считаем дату окончания договора включительно
             DateTime contractEnd = agreement.DateEndContract.Date.AddDays(1);
 
             if (startTime < agreement.DateAgreement.Date || startTime.AddDays(1) > contractEnd)
                 throw new ArgumentException("Дежурство должно полностью входить в период договора.", nameof(startTime));
+
             StartTime = startTime;
-            CheckGuard(guard);
+
+            if (!restoring)
+                CheckGuard(guard);
+
             Agreement = agreement;
             PlannedGuard = guard;
             ActualGuard = guard;
@@ -72,6 +85,33 @@ namespace Security_agent
             if (!guard.Position.IsGuard) throw new InvalidOperationException("Дежурить может только охранник.");
             if (guard.DismissalDate.HasValue && StartTime.Date >= guard.DismissalDate.Value.Date) 
                 throw new InvalidOperationException("Охранник уже уволен на момент дежурства.");
+        }
+
+        // Восстановление дежурства и всей истории замен
+        internal static DutyShift Restore(
+            ObjectAgreement agreement,
+            Staff plannedGuard,
+            DateTime startTime,
+            IEnumerable<ShiftReplacement> history)
+        {
+            if (history == null)
+                throw new ArgumentNullException(nameof(history));
+            
+            var shift = new DutyShift(agreement, plannedGuard, startTime, true);
+
+            foreach (ShiftReplacement replacement in history)
+            {
+                if (replacement == null || replacement.PreviousGuard != shift.ActualGuard ||  replacement.NewGuard == null || replacement.NewGuard == shift.ActualGuard ||
+                string.IsNullOrWhiteSpace(replacement.Reason))
+                    throw new InvalidOperationException("Некорректная история замен.");
+                
+                shift.replacements.Add(new ShiftReplacement(
+                    shift.ActualGuard,
+                    replacement.NewGuard,
+                    replacement.Reason.Trim()));
+                shift.ActualGuard = replacement.NewGuard;
+            }
+            return shift;
         }
     }
 
