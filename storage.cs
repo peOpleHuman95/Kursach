@@ -2,19 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
-using System.Text.Json.Serialization;
+
 namespace Security_agent
 {
-    // Данные первого этапа: должность и сотрудник
-    public class AgencyData
-    {
-        public List<Position> Positions {get;} = new List<Position>();
-        public List<Staff> Employees {get;} = new List<Staff>();
-    }
     public class Storage
     {
         private readonly JsonSerializerOptions options = new JsonSerializerOptions
@@ -95,6 +88,9 @@ namespace Security_agent
                 }
                 file.Employees.Add(saved);
             }
+            SaveClientsAndAgreements(file, data);
+            SaveSchedule(file, data);
+
             string json = JsonSerializer.Serialize(file, options);
 
             Directory.CreateDirectory(Path.GetDirectoryName(fullPath)!);
@@ -141,7 +137,7 @@ namespace Security_agent
                 throw new InvalidDataException("Некорректный JSON. Файл не изменен.",error);
             }
 
-            if (file.Version != 1 || file.Positions == null || file.Employees == null)
+            if ((file.Version < 1 || file.Version > 3) || file.Positions == null || file.Employees == null)
                 throw new InvalidDataException("Неизвестный формат файла.");
             
             var data = new AgencyData();
@@ -223,69 +219,345 @@ namespace Security_agent
                 
                 data.Employees.Add(employee);
             }
+            LoadClientsAndAgreements(file, data);
+            LoadSchedule(file, data);
             return data;
         }
-    
-    }
-    // Простые записи для JSON без взаимных ссылок объектов
-    public class FileData
-    {
-        [JsonRequired]
-        public int Version {get; set;} = 1;
+        // Сохранение клиентов, договоров, назначений и платежей
+        private void SaveClientsAndAgreements(FileData file, AgencyData data)
+        {
+            var clients = data.Clients.Concat(data.Agreements.Select(agreement => agreement.Client)).Distinct().ToList();
 
-        [JsonRequired]
-        public List<PositionData> Positions {get; set;} = new();
+            file.Clients = new List<ClientData>();
+            file.Agreements = new List<AgreementData>();
 
-        [JsonRequired]
-        public List<EmployeeData> Employees {get; set;} = new();
-    }
-    public class PositionData
-    {
-        public int Id {get; set;}
-        public string Name {get; set;} = "";
-        public decimal BaseSalary {get; set;}
-        public bool IsGuard {get; set;}
-    }
-    public class EmployeeData
-    {
-        public int PositionId {get; set;}
-        public string FirstName {get; set;} = "";
-        public string LastName {get; set;} = "";
-        public string MiddleName {get; set;} = "";
-        public string Address {get; set;} = "";
-        public decimal PersonalAllowance {get;set;}
-        public bool CanCarryWeapon {get; set;}
-        public string CertificateNumber {get; set;} = "";
-        public string LicenseNumber {get; set;} = "";
-        public string Inn {get; set;} = "";
-        public string PfrNumber {get; set;} = "";
-        public DateTime? DismissalDate {get; set;}
+            for (int i = 0; i < clients.Count; i++)
+            {
+                Client client = clients[i];
 
-        [JsonRequired]
-        public DocumentsData Documents {get; set;} = new();
+                var saved = new ClientData
+                {
+                    Id = i + 1,
+                    Address = client.Address
+                };
 
-        public WeaponData? Weapon {get; set;}
+                if (client is ClientLegalEntity legal)
+                {
+                    saved.Type = "Legal";
+                    saved.NameFirm = legal.NameFirm;
+                }
+                else if (client is ClientIndividual individual)
+                {
+                    saved.Type = "Individual";
+                    saved.FirstName = individual.FirstName;
+                    saved.LastName = individual.LastName;
+                    saved.MiddleName = individual.MiddleName;
+                    saved.Passport = individual.Passport;
+                }
+                else throw new InvalidOperationException("Неизвестный тип клиента.");
 
-        public List<EquipmentsData> Equipment {get; set;} = new();
-    }
-    public class DocumentsData
-    {
-        public string Passport {get; set;} = "";
-        public bool MilitaryIdCard { get; set; }
-        public string EmploymentRecordBook { get; set; } = "";
-        public string EducationalDocument { get; set; } = "";
-        public bool CriminalRecord { get; set; }
-        public bool MedicalReport { get; set; }
-        public string MedicalBook { get; set; } = "";
-    }
-    public class WeaponData
-    {
-        public string Brand {get; set;} = "";
-        public string RegistrationNumber {get; set;} = "";
-    }
-     public class EquipmentsData
-    {
-        public string Name {get; set;} = "";
-        public string InventoryNumber {get; set;} = "";
+                file.Clients.Add(saved);
+            }
+
+            foreach (Agreement agreement in data.Agreements)
+            {
+                var saved = new AgreementData
+                {
+                    ClientId = clients.IndexOf(agreement.Client) + 1,
+                    NumberAgreement = agreement.NumberAgreement,
+                    DateAgreement = agreement.DateAgreement,
+                    DateEndContract = agreement.DateEndContract
+                };
+
+                foreach (Staff employee in agreement.Employees)
+                {
+                    int index = data.Employees.IndexOf(employee);
+
+                    if (index < 0) 
+                        throw new InvalidOperationException("Назначенный сотдрудник отсутсвует отсутствует в общем списке сотрудников.");
+
+                        saved.EmployeeIds.Add(index + 1);   
+                }
+                foreach (Payment payment in agreement.Payments)
+                {
+                    saved.Payments.Add(new PaymentData
+                    {
+                        Sum = payment.Sum,
+                        DatePayment = payment.DatePayment,
+                        NumberDocument = payment.NumberDocument
+                    });
+
+                }
+                if (agreement is EventAgreement ev)
+                {
+                    saved.Type = "Event";
+                    saved.ServiceAddress = ev.EventAddress;
+                    saved.DateEvent = ev.DateEvent;
+                    saved.EndEvent = ev.EndEvent;
+                    saved.ServiceType = ev.EventNature;
+                    saved.ParticipantsCount = ev.ParticipantsCount;
+                    saved.ParticipantsPerGuard = ev.ParticipantsPerGuard;
+                    saved.Rate = ev.HourlyRate;
+                }
+                else if (agreement is ObjectAgreement obj)
+                {
+                    saved.Type = "Object";
+                    saved.ServiceAddress = obj.ObjectAddress;
+                    saved.ServiceType = obj.ObjectType;
+                    saved.Area = obj.Area;
+                    saved.AreaPerGuard = obj.AreaPerGuard;
+                    saved.Rate = obj.MonthlyRate;
+                }
+                else throw new InvalidOperationException("Неизвестный тип договора.");
+
+                file.Agreements.Add(saved);
+            }
+        
+        }
+        // Восстановление клиентов и связей договоров
+        private void LoadClientsAndAgreements(FileData file, AgencyData data)
+        {
+            if (file.Version == 1 &&
+                file.Clients == null &&
+                file.Agreements == null)
+            {
+                return;
+            }
+
+            if (file.Clients == null || file.Agreements == null)
+            {
+                throw new InvalidDataException(
+                    "В файле отсутствуют клиенты или договоры.");
+            }
+
+            var clients = new Dictionary<int, Client>();
+
+            foreach (ClientData saved in file.Clients)
+            {
+                if (saved == null ||
+                    saved.Id <= 0 ||
+                    clients.ContainsKey(saved.Id))
+                {
+                    throw new InvalidDataException(
+                        "Некорректный идентификатор клиента.");
+                }
+
+                Client client;
+
+                if (saved.Type == "Legal")
+                {
+                    client = new ClientLegalEntity(
+                        saved.NameFirm,
+                        saved.Address);
+                }
+                else if (saved.Type == "Individual")
+                {
+                    client = new ClientIndividual(
+                        saved.FirstName,
+                        saved.LastName,
+                        saved.MiddleName,
+                        saved.Address,
+                        saved.Passport);
+                }
+                else
+                {
+                    throw new InvalidDataException(
+                        "Неизвестный тип клиента.");
+                }
+
+                clients.Add(saved.Id, client);
+                data.Clients.Add(client);
+            }
+
+            foreach (AgreementData saved in file.Agreements)
+            {
+                if (saved == null ||
+                    saved.EmployeeIds == null ||
+                    saved.Payments == null)
+                {
+                    throw new InvalidDataException(
+                        "Неполная запись договора.");
+                }
+
+                if (!clients.TryGetValue(saved.ClientId, out Client? client))
+                {
+                    throw new InvalidDataException(
+                        "Клиент договора не найден.");
+                }
+
+                Agreement agreement;
+
+                if (saved.Type == "Event")
+                {
+                    agreement = new EventAgreement(
+                        client,
+                        saved.NumberAgreement,
+                        saved.DateAgreement,
+                        saved.DateEndContract,
+                        saved.ServiceAddress,
+                        saved.DateEvent,
+                        saved.EndEvent,
+                        saved.ServiceType,
+                        saved.ParticipantsCount,
+                        saved.ParticipantsPerGuard,
+                        saved.Rate);
+                }
+                else if (saved.Type == "Object")
+                {
+                    if (client is not ClientLegalEntity legal)
+                    {
+                        throw new InvalidDataException(
+                            "Объект может охраняться только по договору " +
+                            "с юридическим лицом.");
+                    }
+
+                    agreement = new ObjectAgreement(
+                        legal,
+                        saved.NumberAgreement,
+                        saved.DateAgreement,
+                        saved.DateEndContract,
+                        saved.ServiceAddress,
+                        saved.ServiceType,
+                        saved.Area,
+                        saved.AreaPerGuard,
+                        saved.Rate);
+                }
+                else
+                {
+                    throw new InvalidDataException(
+                        "Неизвестный тип договора.");
+                }
+
+                foreach (int id in saved.EmployeeIds)
+                {
+                    if (id <= 0 || id > data.Employees.Count)
+                    {
+                        throw new InvalidDataException(
+                            "Сотрудник договора не найден.");
+                    }
+
+                    agreement.RestoreEmployee(data.Employees[id - 1]);
+                }
+
+                foreach (PaymentData payment in saved.Payments)
+                {
+                    if (payment == null)
+                    {
+                        throw new InvalidDataException(
+                            "Пустая запись платежа.");
+                    }
+
+                    agreement.AddPayment(new Payment(
+                        payment.Sum,
+                        payment.DatePayment,
+                        payment.NumberDocument));
+                }
+
+                data.Agreements.Add(agreement);
+            }
+        }
+
+        // Номер сотрудника в общем списке, начиная с 1
+        private int GetEmployeeId(AgencyData data, Staff employee)
+        {
+            int index = data.Employees.IndexOf(employee);
+
+            if (index < 0)
+                throw new InvalidOperationException("Участник дежурства отсутсвует в общем списке сотрудников.");
+            
+            return index + 1;
+        }
+
+        // Получение уже загруженного сотрудника по номеру
+        private Staff GetEmployee(AgencyData data, int id)
+        {
+            if (id <= 0 || id > data.Employees.Count)
+                throw new InvalidDataException("Сотрудник дежурства не найден.");
+            return data.Employees[id - 1];
+        }
+
+        // Сохранение графика и истории замен
+        private void SaveSchedule(FileData file, AgencyData data)
+        {
+            file.Shifts = new List<DutyShiftData>();
+
+            foreach (DutyShift shift in data.Schedule.Shifts)
+            {
+                int index = data.Agreements.IndexOf(shift.Agreement);
+
+                if (index < 0)
+                    throw new InvalidOperationException("Договор дежурства отсутствует в общем списке договоров.");
+                
+                var saved = new DutyShiftData
+                {
+                    AgreementId = index + 1,
+                    PlannedGuardId = GetEmployeeId(data, shift.PlannedGuard),
+                    StartTime = shift.StartTime
+                };
+
+                foreach (ShiftReplacement replacement in shift.Replacements)
+                {
+                    saved.Replacements.Add(new ShiftReplacementData
+                    {
+                        PreviousGuardId = GetEmployeeId(data, replacement.PreviousGuard),
+                        NewGuardId = GetEmployeeId(data, replacement.NewGuard),
+                        Reason = replacement.Reason
+                    });
+                }
+                file.Shifts.Add(saved);
+            }
+        }
+        // Восстановление графиков после загрузки сотрудников и договоров
+        private void LoadSchedule(FileData file, AgencyData data)
+        {
+            if (file.Version < 3 && file.Shifts == null) return;
+
+            if (file.Shifts == null)
+                throw new InvalidDataException("В файле отсутствует график дежурств.");
+            
+            foreach (DutyShiftData saved in file.Shifts)
+            {
+                if (saved == null || saved.Replacements == null)
+                    throw new InvalidDataException("Неполная запись дежурств.");
+                
+                if (saved.AgreementId <= 0 || saved.AgreementId > data.Agreements.Count ||
+                data.Agreements[saved.AgreementId - 1] is not ObjectAgreement agreement)
+                    throw new InvalidDataException("Договор охраны объекта для дежурства не найден.");
+                
+                Staff plannedGuard = GetEmployee(data, saved.PlannedGuardId);
+                var history = new List<ShiftReplacement>();
+
+                foreach (ShiftReplacementData replacement in saved.Replacements)
+                {
+                    if (replacement == null)
+                        throw new InvalidDataException("Пустая запись замены.");
+
+                    history.Add(new ShiftReplacement(
+                        GetEmployee(data, replacement.PreviousGuardId),
+                        GetEmployee(data, replacement.NewGuardId),
+                        replacement.Reason));
+                }
+                try
+                {
+                    DutyShift shift = DutyShift.Restore(
+                        agreement,
+                        plannedGuard,
+                        saved.StartTime,
+                        history);
+                    
+                    // Проверяем отдых охранника с учётом итоговой замены
+                    data.Schedule.AddShift(shift);
+
+                }
+                catch (ArgumentException error)
+                {
+                    throw new InvalidDataException("Некорректные данные дежурства.", error);
+                }
+                catch (InvalidOperationException error)
+                {
+                    throw new InvalidDataException("Некорректный график или история замен.", error);
+                }
+            }
+        }
     }
 }
