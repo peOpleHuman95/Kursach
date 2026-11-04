@@ -8,7 +8,7 @@ namespace Security_agent
     public class FileData
     {
         [JsonRequired]
-        public int Version {get; set;} = 3;
+        public int Version {get; set;} = 4;
 
         [JsonRequired]
         public List<PositionData> Positions {get; set;} = new();

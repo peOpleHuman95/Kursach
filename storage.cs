@@ -70,22 +70,8 @@ namespace Security_agent
                         MedicalBook = employee.Documents.MedicalBook
                     }
                 };
-                if (employee.AssignedWeapon != null)
-                {
-                    saved.Weapon = new WeaponData
-                    {
-                        Brand = employee.AssignedWeapon.Brand,
-                        RegistrationNumber = employee.AssignedWeapon.RegistrationNumber
-                    };
-                }
-                foreach (SpecialEquipment item in employee.AssignedEquipment)
-                {
-                    saved.Equipment.Add(new EquipmentsData
-                    {
-                        Name = item.Name,
-                        InventoryNumber = item.InventoryNumber
-                    });
-                }
+                SaveClientsAndAgreements(file, data);
+                SaveInventory(file, data);
                 file.Employees.Add(saved);
             }
             SaveClientsAndAgreements(file, data);
@@ -137,7 +123,7 @@ namespace Security_agent
                 throw new InvalidDataException("Некорректный JSON. Файл не изменен.",error);
             }
 
-            if ((file.Version < 1 || file.Version > 3) || file.Positions == null || file.Employees == null)
+            if ((file.Version < 1 || file.Version > 4) || file.Positions == null || file.Employees == null)
                 throw new InvalidDataException("Неизвестный формат файла.");
             
             var data = new AgencyData();
@@ -195,33 +181,85 @@ namespace Security_agent
                     doc.MedicalBook);
                 employee.SetWeaponPermission(saved.CanCarryWeapon);
 
-                if (saved.Weapon != null)
-                {
-                    employee.AssignWeapon(new Weapon
-                    {
-                        Brand = saved.Weapon.Brand,
-                        RegistrationNumber = saved.Weapon.RegistrationNumber
-                    });
-                }
-                foreach (EquipmentsData item in saved.Equipment)
-                {
-                    if (item == null)
-                        throw new InvalidDataException("Пустая запись спецсредства.");
-                    
-                    employee.AssignEquipment(new SpecialEquipment
-                    {
-                        Name = item.Name,
-                        InventoryNumber = item.InventoryNumber
-                    });
-                }
-                if (saved.DismissalDate.HasValue)
-                    employee.Dismiss(saved.DismissalDate.Value);
+                if (file.Version < 4)
+                    LoadLegacyEquipment(saved, employee, data);
                 
                 data.Employees.Add(employee);
+            }
+            if (file.Version >=4) 
+                LoadInventory(file, data);
+            
+            // Увольнение восстанавливаем после сохраненной выдачи снаряжения
+            // Это позволяет прочитать исторические записи старых файлов
+            for (int i = 0; i < file.Employees.Count; i++)
+            {
+                if (file.Employees[i].DismissalDate is DateTime date)
+                    data.Employees[i].Dismiss(date);
             }
             LoadClientsAndAgreements(file, data);
             LoadSchedule(file, data);
             return data;
+        }
+
+        // Сохранение свободного и выданного снаряжения
+        private void SaveInventory (FileData file, AgencyData data)
+        {
+            // Выданные предметы должны находитсья в общих списках
+            foreach (Staff employee in data.Employees)
+            {
+                if (employee.AssignedWeapon != null && !data.Weapons.Contains(employee.AssignedWeapon))
+                    throw new InvalidOperationException("Выданное оружие отсутствует в обще списке оружия.");
+                if (employee.AssignedEquipment.Any(item => !data.SpecialEquipmentItems.Contains(item)))
+                    throw new InvalidOperationException("Выданное спецсредство отсутствует в общем списке спецсредств.");
+                
+                file.Weapons = new List<WeaponData>();
+
+                foreach (Weapon weapon in data.Weapons.Distinct())
+                {
+                    if (weapon == null)
+                        throw new InvalidOperationException("Пустая запись оружия.");
+                    
+                    file.Weapons.Add(new WeaponData
+                    {
+                        Brand = weapon.Brand,
+                        RegistrationNumber = weapon.RegistrationNumber,
+                        AssignedEmployeeId = GetInventoryOwnerId(data, weapon)
+                    });
+                }
+                
+                file.SpecialEquipmentItems = new List<EquipmentsData>();
+
+                foreach (SpecialEquipment item in data.SpecialEquipmentItems.Distinct())
+                {
+                    if (item == null)
+                        throw new InvalidOperationException("Пустая запись спецсредства.");
+                    
+                    file.SpecialEquipmentItems.Add(new EquipmentsData
+                    {
+                        Name = item.Name,
+                        InventoryNumber = item.InventoryNumber,
+                        AssignedEmployeeId = GetInventoryOwnerId(data, item)
+                    });
+                }
+            }
+        }
+
+        // Получение номера сотрудника, которому выдан предмет
+        private int? GetInventoryOwnerId(AgencyData data, SecurityItem item)
+        {
+            Staff? owner = item.AssignedTo;
+
+            if (owner == null) return null;
+
+            int index = data.Employees.IndexOf(owner);
+
+            if (index < 0)
+                throw new InvalidOperationException("Владелец предмета отсутствует в списке сотрудников.");
+            
+            if ((item is Weapon weapon && owner.AssignedWeapon != weapon) ||
+                (item is SpecialEquipment equipment && !owner.AssignedEquipment.Contains(equipment)))
+                throw new InvalidOperationException("Нарушена связь предмета с сотрудником.");
+            return index + 1;
         }
         // Сохранение клиентов, договоров, назначений и платежей
         private void SaveClientsAndAgreements(FileData file, AgencyData data)
@@ -313,6 +351,80 @@ namespace Security_agent
                 file.Agreements.Add(saved);
             }
         
+        }
+
+        // Загрузка снаряжения из старого формата
+        private void LoadLegacyEquipment(EmployeeData saved, Staff employee, AgencyData data)
+        {
+            if (saved.Weapon != null)
+            {
+                var weapon = new Weapon
+                {
+                    Brand = saved.Weapon.Brand,
+                    RegistrationNumber = saved.Weapon.RegistrationNumber
+                };
+                employee.AssignWeapon(weapon);
+                data.Weapons.Add(weapon);
+            }
+
+            foreach (EquipmentsData savedItem in saved.Equipment)
+            {
+                if (savedItem == null)
+                    throw new InvalidDataException("Пустая запись спецсредства.");
+                
+                var item = new SpecialEquipment
+                {
+                    Name = savedItem.Name,
+                    InventoryNumber = savedItem.InventoryNumber
+                };
+
+                employee.AssignEquipment(item);
+                data.SpecialEquipmentItems.Add(item);
+            }
+        }
+
+        // Загрузка общих списков из нового формата
+        private void LoadInventory(FileData file, AgencyData data)
+        {
+            if (file.Weapons == null || file.SpecialEquipmentItems == null)
+                throw new InvalidDataException("В файле отсутствуют общие списки снаряжения.");
+            
+            foreach (WeaponData saved in file.Weapons)
+            {
+                if (saved == null)
+                    throw new InvalidDataException("Пустая запись оружия.");
+                var weapon = new Weapon
+                {
+                    Brand = saved.Brand,
+                    RegistrationNumber = saved.RegistrationNumber
+                };
+
+                if (saved.AssignedEmployeeId.HasValue)
+                {
+                    Staff employee = GetEmployee(data, saved.AssignedEmployeeId.Value);
+                    employee.AssignWeapon(weapon);
+                }
+
+                data.Weapons.Add(weapon);
+            }
+            foreach (EquipmentsData saved in file.SpecialEquipmentItems)
+                {
+                    if (saved == null)
+                        throw new InvalidDataException("Пустая запись спецсредства.");
+                    
+                    var item = new SpecialEquipment
+                    {
+                        Name = saved.Name,
+                        InventoryNumber = saved.InventoryNumber
+                    };
+
+                    if (saved.AssignedEmployeeId.HasValue)
+                    {
+                        Staff employee = GetEmployee(data, saved.AssignedEmployeeId.Value);
+                        employee.AssignEquipment(item);
+                    }
+                    data.SpecialEquipmentItems.Add(item);
+                }
         }
         // Восстановление клиентов и связей договоров
         private void LoadClientsAndAgreements(FileData file, AgencyData data)
