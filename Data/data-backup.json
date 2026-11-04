@@ -1,0 +1,178 @@
+{
+  "Version": 3,
+  "Positions": [
+    {
+      "Id": 1,
+      "BaseSalary": 45000,
+      "IsGuard": true,
+      "Name": "Охранник"
+    },
+    {
+      "Id": 2,
+      "BaseSalary": 55000,
+      "IsGuard": false,
+      "Name": "Бухгалтер"
+    },
+    {
+      "Id": 3,
+      "BaseSalary": 80000,
+      "IsGuard": false,
+      "Name": "Директор"
+    }
+  ],
+  "Employees": [
+    {
+      "PositionId": 1,
+      "FirstName": "Иван",
+      "LastName": "Иванов",
+      "MiddleName": "Иванович",
+      "Address": "Учебный город, ул. Примерная, д. 1",
+      "PersonalAllowance": 5000,
+      "CanCarryWeapon": true,
+      "CertificateNumber": "УЧЕБНОЕ-УД-1",
+      "LicenseNumber": "УЧЕБНАЯ-ЛИЦ-1",
+      "Inn": "ТЕСТ-ИНН-1",
+      "PfrNumber": "ТЕСТ-ПФР-1",
+      "DismissalDate": null,
+      "Documents": {
+        "Passport": "Учебный паспорт 1",
+        "MilitaryIdCard": false,
+        "EmploymentRecordBook": "Учебная трудовая 1",
+        "EducationalDocument": "Учебный диплом",
+        "CriminalRecord": false,
+        "MedicalReport": true,
+        "MedicalBook": "Учебная медкнижка 1"
+      },
+      "Weapon": null,
+      "Equipment": []
+    },
+    {
+      "PositionId": 1,
+      "FirstName": "Алексей",
+      "LastName": "Петров",
+      "MiddleName": "Сергеевич",
+      "Address": "Учебный город, ул. Примерная, д. 2",
+      "PersonalAllowance": 0,
+      "CanCarryWeapon": false,
+      "CertificateNumber": "УЧЕБНОЕ-УД-2",
+      "LicenseNumber": "УЧЕБНАЯ-ЛИЦ-2",
+      "Inn": "ТЕСТ-ИНН-2",
+      "PfrNumber": "ТЕСТ-ПФР-2",
+      "DismissalDate": null,
+      "Documents": {
+        "Passport": "Учебный паспорт 2",
+        "MilitaryIdCard": false,
+        "EmploymentRecordBook": "Учебная трудовая 2",
+        "EducationalDocument": "Учебный диплом",
+        "CriminalRecord": false,
+        "MedicalReport": true,
+        "MedicalBook": "Учебная медкнижка 2"
+      },
+      "Weapon": null,
+      "Equipment": []
+    },
+    {
+      "PositionId": 1,
+      "FirstName": "Анна",
+      "LastName": "Сидорова",
+      "MiddleName": "Викторовна",
+      "Address": "Учебный город, ул. Примерная, д. 3",
+      "PersonalAllowance": 3000,
+      "CanCarryWeapon": false,
+      "CertificateNumber": "УЧЕБНОЕ-УД-3",
+      "LicenseNumber": "УЧЕБНАЯ-ЛИЦ-3",
+      "Inn": "ТЕСТ-ИНН-3",
+      "PfrNumber": "ТЕСТ-ПФР-3",
+      "DismissalDate": null,
+      "Documents": {
+        "Passport": "Учебный паспорт 3",
+        "MilitaryIdCard": false,
+        "EmploymentRecordBook": "Учебная трудовая 3",
+        "EducationalDocument": "Учебный диплом",
+        "CriminalRecord": false,
+        "MedicalReport": true,
+        "MedicalBook": "Учебная медкнижка 3"
+      },
+      "Weapon": null,
+      "Equipment": []
+    },
+    {
+      "PositionId": 1,
+      "FirstName": "Дмитрий",
+      "LastName": "Смирнов",
+      "MiddleName": "Андреевич",
+      "Address": "Учебный город, ул. Примерная, д. 4",
+      "PersonalAllowance": 2000,
+      "CanCarryWeapon": false,
+      "CertificateNumber": "УЧЕБНОЕ-УД-4",
+      "LicenseNumber": "УЧЕБНАЯ-ЛИЦ-4",
+      "Inn": "ТЕСТ-ИНН-4",
+      "PfrNumber": "ТЕСТ-ПФР-4",
+      "DismissalDate": null,
+      "Documents": {
+        "Passport": "Учебный паспорт 4",
+        "MilitaryIdCard": false,
+        "EmploymentRecordBook": "Учебная трудовая 4",
+        "EducationalDocument": "Учебный диплом",
+        "CriminalRecord": false,
+        "MedicalReport": true,
+        "MedicalBook": "Учебная медкнижка 4"
+      },
+      "Weapon": null,
+      "Equipment": []
+    },
+    {
+      "PositionId": 2,
+      "FirstName": "Елена",
+      "LastName": "Кузнецова",
+      "MiddleName": "Павловна",
+      "Address": "Учебный город, ул. Примерная, д. 5",
+      "PersonalAllowance": 4000,
+      "CanCarryWeapon": false,
+      "CertificateNumber": "",
+      "LicenseNumber": "",
+      "Inn": "ТЕСТ-ИНН-5",
+      "PfrNumber": "ТЕСТ-ПФР-5",
+      "DismissalDate": null,
+      "Documents": {
+        "Passport": "Учебный паспорт 5",
+        "MilitaryIdCard": false,
+        "EmploymentRecordBook": "Учебная трудовая 5",
+        "EducationalDocument": "Учебный диплом",
+        "CriminalRecord": false,
+        "MedicalReport": false,
+        "MedicalBook": ""
+      },
+      "Weapon": null,
+      "Equipment": []
+    },
+    {
+      "PositionId": 3,
+      "FirstName": "Михаил",
+      "LastName": "Соколов",
+      "MiddleName": "Олегович",
+      "Address": "Учебный город, ул. Примерная, д. 6",
+      "PersonalAllowance": 10000,
+      "CanCarryWeapon": false,
+      "CertificateNumber": "",
+      "LicenseNumber": "",
+      "Inn": "ТЕСТ-ИНН-6",
+      "PfrNumber": "ТЕСТ-ПФР-6",
+      "DismissalDate": null,
+      "Documents": {
+        "Passport": "Учебный паспорт 6",
+        "MilitaryIdCard": false,
+        "EmploymentRecordBook": "Учебная трудовая 6",
+        "EducationalDocument": "Учебный диплом",
+        "CriminalRecord": false,
+        "MedicalReport": false,
+        "MedicalBook": ""
+      },
+      "Weapon": null,
+      "Equipment": []
+    }
+  ],
+  "Clients": [],
+  "Agreements": [],
+  "Shifts": []
+}

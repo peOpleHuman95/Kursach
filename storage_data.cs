@@ -20,6 +20,9 @@ namespace Security_agent
         public List<AgreementData>? Agreements { get; set; }
         
         public List<DutyShiftData>? Shifts {get; set;}
+
+        public List<WeaponData>? Weapons {get; set;}
+        public List<EquipmentsData>? SpecialEquipmentItems {get; set;}
     }
 
     public class PositionData
@@ -111,11 +114,17 @@ namespace Security_agent
     {
         public string Brand {get; set;} = "";
         public string RegistrationNumber {get; set;} = "";
+
+        // null означает, что оружие свободно
+        public int? AssignedEmployeeId {get; set;}
     }
     public class EquipmentsData
     {
     public string Name {get; set;} = "";
     public string InventoryNumber {get; set;} = "";
+
+    // null означает, что спецсредство свободно
+    public int? AssignedEmployeeId {get; set;}
     }
     
     public class DutyShiftData
