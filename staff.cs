@@ -34,8 +34,21 @@ namespace Security_agent
 
         // Должность и зарплата
         public Position Position {get; private set;}
+
         // Персональная надбавка к окладу
-        public decimal PersonalAllowance {get; set;}
+        private decimal personalAllowance;
+        public decimal PersonalAllowance
+        {
+            get => personalAllowance;
+
+            set
+            {
+                if (value < 0)
+                    throw new ArgumentOutOfRangeException(nameof(value),"Персональная надбавка не может быть отрицательной");
+                
+                personalAllowance = value;
+            }
+        }
         // Зарплата: оклад + надбавка
         public decimal Salary => Position.BaseSalary  + PersonalAllowance;
 

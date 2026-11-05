@@ -70,11 +70,11 @@ namespace Security_agent
                         MedicalBook = employee.Documents.MedicalBook
                     }
                 };
-                SaveClientsAndAgreements(file, data);
-                SaveInventory(file, data);
+                
                 file.Employees.Add(saved);
             }
             SaveClientsAndAgreements(file, data);
+            SaveInventory(file, data);
             SaveSchedule(file, data);
 
             string json = JsonSerializer.Serialize(file, options);
@@ -211,7 +211,8 @@ namespace Security_agent
                     throw new InvalidOperationException("Выданное оружие отсутствует в обще списке оружия.");
                 if (employee.AssignedEquipment.Any(item => !data.SpecialEquipmentItems.Contains(item)))
                     throw new InvalidOperationException("Выданное спецсредство отсутствует в общем списке спецсредств.");
-                
+            }
+
                 file.Weapons = new List<WeaponData>();
 
                 foreach (Weapon weapon in data.Weapons.Distinct())
@@ -241,8 +242,8 @@ namespace Security_agent
                         AssignedEmployeeId = GetInventoryOwnerId(data, item)
                     });
                 }
-            }
         }
+        
 
         // Получение номера сотрудника, которому выдан предмет
         private int? GetInventoryOwnerId(AgencyData data, SecurityItem item)

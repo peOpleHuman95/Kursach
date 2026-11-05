@@ -167,6 +167,38 @@ namespace Security_agent
             employees.Add(employee);
         }
 
+        // Снятие сотрудника с договора
+        public void RemoveEmployee(Staff employee)
+        {
+            if (employee == null)
+                throw new ArgumentNullException(nameof(employee));
+            
+            if (!employees.Remove(employee))
+                throw new InvalidOperationException("Сотрудник не назначен на этот договор.");
+        
+        }
+        public void ReplaceEmployee(Staff previousEmployee, Staff newEmployee)
+        {
+            if (previousEmployee == null)
+                throw new ArgumentNullException(nameof(previousEmployee));
+            
+            if (newEmployee == null) 
+                throw new ArgumentNullException(nameof(newEmployee));
+
+            int index = employees.IndexOf(previousEmployee);
+            
+            if (index < 0)
+                throw new InvalidOperationException("Заменяемый сотрудник не назначен на этот договор.");
+            if (previousEmployee == newEmployee)
+                throw new InvalidOperationException("Для замены выберите друго сотрудника.");
+            if (!newEmployee.Position.IsGuard || newEmployee.IsDismissed)
+                throw new InvalidOperationException("Назначить можно только работающего охранника.");
+            if (employees.Contains(newEmployee))
+                throw new InvalidOperationException("Новый сотрудник уже назначен на этот договор.");
+            
+            employees[index] = newEmployee;
+        }
+
         // Проверка укомплектованности охраны
         protected void CheckStaffing()
         {
