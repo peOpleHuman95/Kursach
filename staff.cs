@@ -163,12 +163,21 @@ namespace Security_agent
              }
         }
         // Фиксация даты увольнения
-        public void Dismiss (DateTime date)
+        public void Dismiss(DateTime date)
         {
             if (IsDismissed)
             {
                 throw new InvalidOperationException("Сотрудник уже уволен.");
             }
+            if (AssignedWeapon != null || AssignedEquipment.Count > 0)
+                throw new InvalidOperationException("Перед увольнение сотрудник должен сдаеть оружие и спецсредство.");
+            
+            DismissalDate = date.Date;
+        }
+        
+        // Восстановление даты увольнения из сохраненного файла
+        internal void RestoreDismissal(DateTime date)
+        {
             DismissalDate = date.Date;
         }
     }

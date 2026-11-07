@@ -128,5 +128,38 @@ namespace Security_agent
             catch (Exception error) { ShowError(error); }
         }
         private void ShowError(Exception error) => MessageBox.Show(this, error.Message, "Не удалось выполнить действие", MessageBoxButton.OK, MessageBoxImage.Warning);
+
+        private void OpenClientsClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                AgencyData working = storage.Load(dataPath);
+
+                var window = new ClientsWindow(working, storage, dataPath){Owner = this};
+
+                window.ShowDialog();
+                LoadEmployees();
+            }
+            catch (Exception error)
+            {
+                ShowError(error);
+            }
+        }
+        private void OpenAgreementsClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                AgencyData working = storage.Load(dataPath);
+
+                var window = new AgreementsWindow(working, storage, dataPath){Owner = this};
+
+                window.ShowDialog();
+                LoadEmployees();
+            }
+            catch (Exception error)
+            {
+                ShowError(error);
+            }
+        }
     }
 }

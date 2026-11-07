@@ -75,6 +75,7 @@ namespace Security_agent
             }
             SaveClientsAndAgreements(file, data);
             SaveInventory(file, data);
+            ValidateInventoryNumbers(data);
             SaveSchedule(file, data);
 
             string json = JsonSerializer.Serialize(file, options);
@@ -183,18 +184,20 @@ namespace Security_agent
 
                 if (file.Version < 4)
                     LoadLegacyEquipment(saved, employee, data);
+
                 
                 data.Employees.Add(employee);
             }
             if (file.Version >=4) 
                 LoadInventory(file, data);
+            ValidateInventoryNumbers(data);
             
             // Увольнение восстанавливаем после сохраненной выдачи снаряжения
             // Это позволяет прочитать исторические записи старых файлов
             for (int i = 0; i < file.Employees.Count; i++)
             {
                 if (file.Employees[i].DismissalDate is DateTime date)
-                    data.Employees[i].Dismiss(date);
+                    data.Employees[i].RestoreDismissal(date);
             }
             LoadClientsAndAgreements(file, data);
             LoadSchedule(file, data);
@@ -670,6 +673,28 @@ namespace Security_agent
                 {
                     throw new InvalidDataException("Некорректный график или история замен.", error);
                 }
+            }
+        }
+        private void ValidateInventoryNumbers(AgencyData data)
+        {
+            ValidateUniqueNumbers(data.Weapons.Select(weapon => weapon.RegistrationNumber), "Регистрационный номер оружия");
+            ValidateUniqueNumbers(data.SpecialEquipmentItems.Select(item => item.InventoryNumber), "Инвентарный номер спецсредства");
+        }
+        
+        private void ValidateUniqueNumbers(IEnumerable<string> numbers, string fieldName)
+        {
+            var usedNumbers = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (string number in numbers)
+            {
+                if (string.IsNullOrWhiteSpace(number))
+                    throw new InvalidDataException($"{fieldName} не может быть пустым");
+                
+                string normalizedNumber = number.Trim();
+
+                if (!usedNumbers.Add(normalizedNumber))
+                    throw new InvalidDataException($"{fieldName} {normalizedNumber} уже используется");
+
             }
         }
     }

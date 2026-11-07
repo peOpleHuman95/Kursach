@@ -1,23 +1,23 @@
 {
-  "Version": 3,
+  "Version": 4,
   "Positions": [
     {
       "Id": 1,
+      "Name": "Охранник",
       "BaseSalary": 45000,
-      "IsGuard": true,
-      "Name": "Охранник"
+      "IsGuard": true
     },
     {
       "Id": 2,
+      "Name": "Бухгалтер",
       "BaseSalary": 55000,
-      "IsGuard": false,
-      "Name": "Бухгалтер"
+      "IsGuard": false
     },
     {
       "Id": 3,
+      "Name": "Директор",
       "BaseSalary": 80000,
-      "IsGuard": false,
-      "Name": "Директор"
+      "IsGuard": false
     }
   ],
   "Employees": [
@@ -172,7 +172,49 @@
       "Equipment": []
     }
   ],
-  "Clients": [],
-  "Agreements": [],
-  "Shifts": []
+  "Clients": [
+    {
+      "Id": 1,
+      "Type": "Legal",
+      "Address": "ул Пупкина, д Подзалупкина 52/67",
+      "NameFirm": "Говномессы",
+      "FirstName": "",
+      "LastName": "",
+      "MiddleName": "",
+      "Passport": ""
+    },
+    {
+      "Id": 2,
+      "Type": "Individual",
+      "Address": "ул Парашная, д Подшконкой 13",
+      "NameFirm": "",
+      "FirstName": "Говно",
+      "LastName": "Сладкое",
+      "MiddleName": "Мамонтовича",
+      "Passport": "0228 526769"
+    }
+  ],
+  "Agreements": [
+    {
+      "Type": "Event",
+      "ClientId": 2,
+      "NumberAgreement": "1337",
+      "DateAgreement": "2027-02-28T00:00:00",
+      "DateEndContract": "2027-11-28T00:00:00",
+      "ServiceAddress": "Пушкина 17",
+      "ServiceType": "отсос",
+      "Rate": 1500,
+      "DateEvent": "2027-02-28T10:00:00",
+      "EndEvent": "2027-11-27T22:00:00",
+      "ParticipantsCount": 10,
+      "ParticipantsPerGuard": 5,
+      "Area": 0,
+      "AreaPerGuard": 0,
+      "EmployeeIds": [],
+      "Payments": []
+    }
+  ],
+  "Shifts": [],
+  "Weapons": [],
+  "SpecialEquipmentItems": []
 }
