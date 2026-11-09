@@ -1,0 +1,52 @@
+<Window x:Class="Security_agent.ClientEditorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Новый клиент" Width="460" Height="570" MinHeight="340"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False"
+        FontFamily="Segoe UI" FontSize="14" Background="#F3F6FB">
+    <Window.Resources>
+        <ResourceDictionary Source="Theme.xaml"/>
+    </Window.Resources>
+
+    <DockPanel Margin="24">
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal"
+                    HorizontalAlignment="Right" Margin="0,12,0,0">
+            <Button Content="Отмена" IsCancel="True" Margin="0,0,8,0"/>
+            <Button Content="Сохранить" IsDefault="True"
+                    Style="{StaticResource PrimaryButton}" Click="SaveClientClick"/>
+        </StackPanel>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <TextBlock Text="Тип клиента"/>
+                <ComboBox x:Name="ClientTypeBox"
+                          Margin="0,4,0,12"
+                          SelectionChanged="ClientTypeChanged">
+                    <ComboBoxItem Content="Физическое лицо"/>
+                    <ComboBoxItem Content="Юридическое лицо"/>
+                </ComboBox>
+    
+                <StackPanel x:Name="IndividualFields">
+                    <TextBlock Text="Фамилия"/>
+                    <TextBox x:Name="LastNameBox" Margin="0,4,0,12"/>
+    
+                    <TextBlock Text="Имя"/>
+                    <TextBox x:Name="FirstNameBox" Margin="0,4,0,12"/>
+    
+                    <TextBlock Text="Отчество"/>
+                    <TextBox x:Name="MiddleNameBox" Margin="0,4,0,12"/>
+    
+                    <TextBlock Text="Паспортные данные"/>
+                    <TextBox x:Name="PassportBox" Margin="0,4,0,12"/>
+                </StackPanel>
+    
+                <StackPanel x:Name="LegalFields" Visibility="Collapsed">
+                    <TextBlock Text="Название организации"/>
+                    <TextBox x:Name="CompanyBox" Margin="0,4,0,12"/>
+                </StackPanel>
+    
+                <TextBlock Text="Адрес"/>
+                <TextBox x:Name="AddressBox" Margin="0,4,0,16"/>
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</Window>

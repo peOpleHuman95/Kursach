@@ -98,9 +98,9 @@
                             Style="{StaticResource SidebarButton}"
                             Click="OpenAgreementsClick"/>
 
-                    <Button Content="Дежурства"
+                   <Button Content="Дежурства"
                             Style="{StaticResource SidebarButton}"
-                            IsEnabled="False"/>
+                            Click="OpenDutyClick"/>
 
                     <Button Content="Снаряжение"
                             Style="{StaticResource SidebarButton}"
@@ -197,11 +197,12 @@
                 </Border>
             </UniformGrid>
 
-            <!-- Поиск и фильтр -->
+            <!-- Поиск и фильтры -->
             <Grid Grid.Row="2" Margin="0,0,0,16">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="180"/>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
@@ -230,7 +231,17 @@
                     </ComboBox>
                 </StackPanel>
 
-                <Button Grid.Column="2"
+                <StackPanel Grid.Column="2" Width="190" Margin="14,0,0,0">
+                    <TextBlock Text="Должность"
+                               Foreground="#64748B"
+                               FontSize="12"
+                               Margin="0,0,0,6"/>
+                    <ComboBox x:Name="PositionFilter"
+                              DisplayMemberPath="Label"
+                              SelectionChanged="StatusChanged"/>
+                </StackPanel>
+
+                <Button Grid.Column="3"
                         Content="Обновить"
                         Click="ReloadClick"
                         Margin="14,22,0,0"/>

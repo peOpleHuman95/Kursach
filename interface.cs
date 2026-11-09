@@ -10,6 +10,7 @@ namespace Security_agent
     {
         private readonly Storage storage = new();
         private AgencyData? data;
+        private sealed record PositionFilterChoice(string? Name, string Label);
         private readonly string dataPath = GetDataPath();
 
         private static string GetDataPath()
@@ -37,11 +38,13 @@ namespace Security_agent
                 ActiveCount.Text = data.Employees.Count(x => !x.IsDismissed).ToString();
                 GuardCount.Text = data.Employees.Count(x => !x.IsDismissed && x.Position.IsGuard).ToString();
                 ArchiveCount.Text = data.Employees.Count(x => x.IsDismissed).ToString();
+                RefreshPositionFilter(data);
                 RefreshList();
             }
             catch (Exception error)
             {
                 data = null;
+                PositionFilter.ItemsSource = null;
                 EmployeesGrid.ItemsSource = null;
                 AddEmployeeButton.IsEnabled = EditButton.IsEnabled = DismissButton.IsEnabled = false;
                 ActiveCount.Text = GuardCount.Text = ArchiveCount.Text = "—";
@@ -52,20 +55,39 @@ namespace Security_agent
             }
         }
 
+        private void RefreshPositionFilter(AgencyData current)
+        {
+            string? selected = (PositionFilter.SelectedItem as PositionFilterChoice)?.Name;
+            var choices = current.Positions
+                .Select(position => position.Name)
+                .Concat(current.Employees.Select(employee => employee.Position.Name))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(name => name, StringComparer.CurrentCultureIgnoreCase)
+                .Select(name => new PositionFilterChoice(name, name))
+                .Prepend(new PositionFilterChoice(null, "Все должности"))
+                .ToList();
+
+            PositionFilter.ItemsSource = choices;
+            PositionFilter.SelectedItem = choices.FirstOrDefault(choice =>
+                string.Equals(choice.Name, selected, StringComparison.OrdinalIgnoreCase)) ?? choices[0];
+        }
+
         private void RefreshList()
         {
             // События фильтров могут сработать ещё во время InitializeComponent.
-            if (data == null || EmployeesGrid == null || StatusFilter == null) return;
+            if (data == null || EmployeesGrid == null || StatusFilter == null || PositionFilter == null) return;
             string query = SearchBox.Text.Trim();
             int filter = StatusFilter.SelectedIndex;
+            string? position = (PositionFilter.SelectedItem as PositionFilterChoice)?.Name;
             var employees = data.Employees
                 .Where(x => filter == 2 || (filter == 1 ? x.IsDismissed : !x.IsDismissed))
+                .Where(x => position == null || string.Equals(x.Position.Name, position, StringComparison.OrdinalIgnoreCase))
                 .Where(x => string.IsNullOrEmpty(query) ||
                     $"{x.LastName} {x.FirstName} {x.MiddleName} {x.Position.Name}".Contains(query, StringComparison.OrdinalIgnoreCase))
                 .OrderBy(x => x.LastName).ThenBy(x => x.FirstName).ToList();
             EmployeesGrid.ItemsSource = employees;
             EmptyText.Visibility = employees.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
-            EmptyText.Text = query.Length > 0 ? "По вашему запросу ничего не найдено." :
+            EmptyText.Text = query.Length > 0 || position != null ? "По вашему запросу ничего не найдено." :
                 filter == 1 ? "Архив пока пуст." : "Сотрудников пока нет. Добавьте первую запись.";
             StatusText.Text = $"Показано: {employees.Count} из {data.Employees.Count}";
             UpdateActions();
@@ -152,6 +174,23 @@ namespace Security_agent
                 AgencyData working = storage.Load(dataPath);
 
                 var window = new AgreementsWindow(working, storage, dataPath){Owner = this};
+
+                window.ShowDialog();
+                LoadEmployees();
+            }
+            catch (Exception error)
+            {
+                ShowError(error);
+            }
+        }
+
+        private void OpenDutyClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                AgencyData working = storage.Load(dataPath);
+
+                var window = new DutyWindow(working, storage, dataPath){Owner = this};
 
                 window.ShowDialog();
                 LoadEmployees();

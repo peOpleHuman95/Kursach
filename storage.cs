@@ -563,7 +563,7 @@ namespace Security_agent
                             "Пустая запись платежа.");
                     }
 
-                    agreement.AddPayment(new Payment(
+                    agreement.RestorePayment(new Payment(
                         payment.Sum,
                         payment.DatePayment,
                         payment.NumberDocument));

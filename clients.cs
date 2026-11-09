@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -99,10 +99,10 @@ namespace Security_agent
     // Общие данные договора и учет платежей
     public abstract class Agreement
     {
-        public Client Client {get;}
-        public string NumberAgreement {get;}
-        public DateTime DateAgreement {get; }
-        public DateTime DateEndContract {get; }
+        public Client Client { get; private set; }
+        public string NumberAgreement { get; private set; }
+        public DateTime DateAgreement { get; private set; }
+        public DateTime DateEndContract { get; private set; }
         
         private readonly List<Payment> payments = new List<Payment>();
         public IReadOnlyList<Payment> Payments => payments.AsReadOnly();
@@ -129,6 +129,33 @@ namespace Security_agent
         // Добавление платежа с проверкой повтора по номеру и дате документа
         public void AddPayment(Payment payment)
         {
+            ArgumentNullException.ThrowIfNull(payment);
+
+            if (payment.DatePayment.Date > DateTime.Today)
+                throw new ArgumentException("Дата платежа не может быть в будущем.");
+
+            if (decimal.Round(payment.Sum, 2) != payment.Sum)
+                throw new ArgumentException("Укажите сумму с точностью до копеек.");
+
+            CheckStaffing();
+            decimal total = CalculateCost();
+            decimal remaining = total - PaidAmount;
+
+            if (remaining <= 0)
+                throw new InvalidOperationException("Договор уже оплачен.");
+
+            if (this is EventAgreement && (Payments.Count > 0 || payment.Sum != total))
+                throw new InvalidOperationException("Мероприятие нужно оплатить одним платежом на полную сумму.");
+
+            if (payment.Sum > remaining)
+                throw new ArgumentException("Сумма платежа превышает остаток.");
+
+            RestorePayment(payment);
+        }
+
+        // Восстановление ранее записанного платежа с проверкой дублей.
+        internal void RestorePayment(Payment payment)
+        {
             if (payment == null)
                 throw new ArgumentNullException(nameof(payment));
 
@@ -151,6 +178,38 @@ namespace Security_agent
 
         // Полная стоимость охранны по договору
         public abstract decimal CalculateCost();
+
+        public virtual bool CanCalculateCost => Employees.Count == RequiredStaffCount;
+
+        public bool CanEdit => payments.Count == 0;
+
+        internal void ApplyEdit(Agreement edited, DutySchedule schedule)
+        {
+            if (!CanEdit)
+                throw new InvalidOperationException("Договор с платежами нельзя редактировать.");
+
+            if (edited.GetType() != GetType())
+                throw new InvalidOperationException("Вид существующего договора изменить нельзя.");
+
+            if (employees.Count > edited.RequiredStaffCount)
+                throw new InvalidOperationException("Перед изменением нормы снимите лишних охранников с договора.");
+
+            if (schedule.Shifts.Any(shift => shift.Agreement == this &&
+                (shift.StartTime.Date < edited.DateAgreement.Date ||
+                 shift.EndTime.AddTicks(-1).Date > edited.DateEndContract.Date)))
+            {
+                throw new InvalidOperationException("Новые даты должны включать все дежурства договора.");
+            }
+
+            CopyServiceTermsFrom(edited);
+            Client = edited.Client;
+            NumberAgreement = edited.NumberAgreement;
+            DateAgreement = edited.DateAgreement;
+            DateEndContract = edited.DateEndContract;
+        }
+
+        protected abstract void CopyServiceTermsFrom(Agreement edited);
+
 
         // Назначение охранника на договор
         public void AssignEmployee(Staff employee)
@@ -223,16 +282,16 @@ namespace Security_agent
     // Договор охраны для разового мероприятия для любого вида клиента
     public class EventAgreement : Agreement
     {
-        public string EventAddress {get;}
-        public DateTime DateEvent {get;}
-        public DateTime EndEvent {get;}
-        public string EventNature {get;}
-        public int ParticipantsCount {get;}
+        public string EventAddress { get; private set; }
+        public DateTime DateEvent { get; private set; }
+        public DateTime EndEvent { get; private set; }
+        public string EventNature { get; private set; }
+        public int ParticipantsCount { get; private set; }
 
         // Норма участников на одного охранника
-        public int ParticipantsPerGuard {get;}
+        public int ParticipantsPerGuard { get; private set; }
         // Стоимость часа работы одного охранника для клиента
-        public decimal HourlyRate {get;}
+        public decimal HourlyRate { get; private set; }
         // Деление с округление вверх
         public override int RequiredStaffCount => 1 + (ParticipantsCount - 1) / ParticipantsPerGuard;
         public EventAgreement(
@@ -271,6 +330,18 @@ namespace Security_agent
             ParticipantsPerGuard = participantsPerGuard;
             HourlyRate = hourlyRate;
         }
+        protected override void CopyServiceTermsFrom(Agreement edited)
+        {
+            var terms = (EventAgreement)edited;
+            EventAddress = terms.EventAddress;
+            DateEvent = terms.DateEvent;
+            EndEvent = terms.EndEvent;
+            EventNature = terms.EventNature;
+            ParticipantsCount = terms.ParticipantsCount;
+            ParticipantsPerGuard = terms.ParticipantsPerGuard;
+            HourlyRate = terms.HourlyRate;
+        }
+
         // Часы * число назначенных охранников * часовой тариф
         public override decimal CalculateCost()
         {
@@ -282,21 +353,36 @@ namespace Security_agent
     }
 
     // Договор охраны объекта юридического лица
+    public sealed record BillingPeriod(
+        DateTime StartDate,
+        DateTime EndDate,
+        DateTime DueDate,
+        decimal Amount);
+
     public class ObjectAgreement : Agreement
     {
-        public string ObjectAddress {get;}
-        public string ObjectType {get;}
+        public string ObjectAddress { get; private set; }
+        public string ObjectType { get; private set; }
 
         // Площадь объекта в квадратных метрах
-        public decimal Area {get;}
+        public decimal Area { get; private set; }
 
         // Нормы площади на одного выделенного охранника
-        public decimal AreaPerGuard {get;}
+        public decimal AreaPerGuard { get; private set; }
 
-        // Стоимость месяца охраны одним выделенным охраником
-        public decimal MonthlyRate {get;}
+        // Месячный тариф за одно место охранника в смене
+        public decimal MonthlyRate { get; private set; }
 
-        public override int RequiredStaffCount => (int)Math.Ceiling(Area / AreaPerGuard);
+        // Число охранников, которые одновременно работают на объекте.
+        public int GuardsPerShift => (int)Math.Ceiling(Area / AreaPerGuard);
+
+        // При режиме сутки через двое чередуются три команды.
+        private int RotationTeams =>
+            Math.Min(3, (DateEndContract.Date - DateAgreement.Date).Days + 1);
+
+        public override int RequiredStaffCount => GuardsPerShift * RotationTeams;
+
+        public override bool CanCalculateCost => true;
 
 
         public ObjectAgreement(
@@ -321,7 +407,7 @@ namespace Security_agent
             if (monthlyRate <= 0)
                 throw new ArgumentOutOfRangeException(nameof(monthlyRate));
             
-            if (Math.Ceiling(area / areaPerGuard) > int.MaxValue)
+            if (Math.Ceiling(area / areaPerGuard) > int.MaxValue / 3)
                 throw new ArgumentOutOfRangeException(nameof(area), "Слишком большое число охранников.");
 
             ObjectAddress = objectAddress.Trim();
@@ -331,30 +417,53 @@ namespace Security_agent
             MonthlyRate = monthlyRate;
         }
 
-        // Полная стоимость за период договора, включая дату окончания
+        protected override void CopyServiceTermsFrom(Agreement edited)
+        {
+            var terms = (ObjectAgreement)edited;
+            ObjectAddress = terms.ObjectAddress;
+            ObjectType = terms.ObjectType;
+            Area = terms.Area;
+            AreaPerGuard = terms.AreaPerGuard;
+            MonthlyRate = terms.MonthlyRate;
+        }
+
         public override decimal CalculateCost()
         {
-            CheckStaffing();
+            return GetBillingPeriods().Sum(period => period.Amount);
+        }
 
-            decimal total = 0;
+        public IEnumerable<BillingPeriod> GetBillingPeriods()
+        {
+
             DateTime current = DateAgreement.Date;
+            DateTime contractEnd = DateEndContract.Date;
+            decimal total = 0;
+            decimal roundedTotal = 0;
 
             while (true)
             {
                 int daysInMonth = DateTime.DaysInMonth(current.Year, current.Month);
                 DateTime monthEnd = new DateTime(current.Year, current.Month, daysInMonth);
-                DateTime end = monthEnd < DateEndContract.Date ? monthEnd : DateEndContract.Date;
+                DateTime periodEnd = monthEnd < contractEnd ? monthEnd : contractEnd;
+                int days = (periodEnd - current).Days + 1;
 
-                int days = (end - current).Days + 1;
+                DateTime dueDate = days == daysInMonth
+                    ? new DateTime(current.Year, current.Month, 15)
+                    : current.AddDays((days - 1) / 2);
 
-                total += MonthlyRate * Employees.Count * days / daysInMonth;
+                total += MonthlyRate * GuardsPerShift * days / daysInMonth;
+                decimal newRoundedTotal = Math.Round(total, 2, MidpointRounding.AwayFromZero);
 
-                if (end == DateEndContract.Date) break;
-                
-                current = end.AddDays(1);
+                yield return new BillingPeriod(
+                    current, periodEnd, dueDate, newRoundedTotal - roundedTotal);
 
+                roundedTotal = newRoundedTotal;
+
+                if (periodEnd == contractEnd)
+                    break;
+
+                current = periodEnd.AddDays(1);
             }
-            return Math.Round(total, 2, MidpointRounding.AwayFromZero);
         }
     }
 }

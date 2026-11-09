@@ -1,4 +1,4 @@
-﻿
+
 namespace Security_agent
 {
     // Запись о замене охранника
@@ -23,7 +23,7 @@ namespace Security_agent
      public class DutyShift
     {
         public ObjectAgreement Agreement {get;}
-        public DateTime StartTime {get;}
+        public DateTime StartTime { get; private set; }
         public DateTime EndTime => StartTime.AddDays(1);
 
         // Первоначально назначенный охранник
@@ -50,26 +50,40 @@ namespace Security_agent
             if (agreement == null) throw new ArgumentNullException(nameof(agreement));
             if (guard == null) throw new ArgumentNullException(nameof(guard));
 
-            // Считаем дату окончания договора включительно
-            DateTime contractEnd = agreement.DateEndContract.Date.AddDays(1);
-
-            if (startTime < agreement.DateAgreement.Date || startTime.AddDays(1) > contractEnd)
-                throw new ArgumentException("Дежурство должно полностью входить в период договора.", nameof(startTime));
+            CheckPeriod(agreement, startTime);
 
             StartTime = startTime;
 
             if (!restoring)
-                CheckGuard(guard);
+                CheckGuard(guard, startTime);
 
             Agreement = agreement;
             PlannedGuard = guard;
             ActualGuard = guard;
         }
 
+        internal void ApplyReschedule(DateTime startTime)
+        {
+            CheckPeriod(Agreement, startTime);
+            CheckGuard(ActualGuard, startTime);
+            StartTime = startTime;
+        }
+
+        private static void CheckPeriod(ObjectAgreement agreement, DateTime startTime)
+        {
+            DateTime lastDutyDate = startTime.AddDays(1).AddTicks(-1).Date;
+            if (startTime.Date < agreement.DateAgreement.Date ||
+                lastDutyDate > agreement.DateEndContract.Date)
+            {
+                throw new ArgumentException(
+                    "Дежурство должно полностью входить в период договора.", nameof(startTime));
+            }
+        }
+
         // Запись замены и её причины в истории дежурства
         internal void ApplyReplaceGuard(Staff newGuard, string reason)
         {
-            CheckGuard(newGuard);
+            CheckGuard(newGuard, StartTime);
 
             if (string.IsNullOrWhiteSpace(reason)) throw new ArgumentException("Должна быть причина замены.", nameof(reason));
             if (newGuard == ActualGuard) throw new InvalidOperationException("Этот охранник уже назначен на дежурство.");
@@ -79,11 +93,11 @@ namespace Security_agent
         }
 
         // Проверка должности и увольнения на дату начала дежурства
-        private void CheckGuard(Staff guard)
+        private static void CheckGuard(Staff guard, DateTime startTime)
         {
             if (guard == null) throw new ArgumentNullException(nameof(guard));
             if (!guard.Position.IsGuard) throw new InvalidOperationException("Дежурить может только охранник.");
-            if (guard.DismissalDate.HasValue && StartTime.Date >= guard.DismissalDate.Value.Date) 
+            if (guard.DismissalDate.HasValue && startTime.Date >= guard.DismissalDate.Value.Date) 
                 throw new InvalidOperationException("Охранник уже уволен на момент дежурства.");
         }
 
@@ -134,6 +148,20 @@ namespace Security_agent
             shifts.Add(shift);
         }
 
+        public void RescheduleShift(DutyShift shift, DateTime startTime)
+        {
+            ArgumentNullException.ThrowIfNull(shift);
+
+            if (!shifts.Contains(shift))
+                throw new InvalidOperationException("Дежурство отсутствует в графике.");
+
+            if (shift.StartTime == startTime)
+                return;
+
+            CheckRest(shift.ActualGuard, startTime, startTime.AddDays(1), shift);
+            shift.ApplyReschedule(startTime);
+        }
+
         // Замена охранника с проверкой отдыха охранника до и после дежурства
         public void ReplaceGuard(
             DutyShift shift,
@@ -152,26 +180,92 @@ namespace Security_agent
             shift.ApplyReplaceGuard(newGuard, reason);
         }
 
-        // Проверка пересечений и минимум двух суток между дежурствами
-        private void CheckRest(
-            Staff guard,
-            DateTime startTime,
-            DateTime endTime,
-            DutyShift? excludedShift)
+        public IReadOnlyList<DutyShift> FillThrough(
+            ObjectAgreement agreement, DateTime firstStart, DateTime throughDate)
+        {
+            ArgumentNullException.ThrowIfNull(agreement);
+
+            if (throughDate.Date > agreement.DateEndContract.Date)
+                throw new ArgumentException("Дата заполнения выходит за срок договора.", nameof(throughDate));
+
+            DateTime start = shifts.Where(shift => shift.Agreement == agreement)
+                .Select(shift => shift.EndTime)
+                .DefaultIfEmpty(firstStart)
+                .Max();
+            if (start.Date > throughDate.Date)
+                throw new ArgumentException($"Следующая смена начинается {start:dd.MM.yyyy HH:mm}. Выберите эту дату или позже.", nameof(throughDate));
+
+            var guards = agreement.Employees
+                .Where(guard => guard.Position.IsGuard && !guard.IsDismissed)
+                .ToList();
+            var pending = new List<DutyShift>();
+            var schedule = shifts.Concat(pending);
+
+            for (; start.Date <= throughDate.Date; start = start.AddDays(1))
             {
-                TimeSpan requireRest = TimeSpan.FromDays(2);
+                DateTime end = start.AddDays(1);
+                if (end.AddTicks(-1).Date > agreement.DateEndContract.Date)
+                    break;
 
-                foreach(DutyShift existingShift in shifts)
-                {
-                    if (existingShift == excludedShift) continue;
-                    if (existingShift.ActualGuard != guard) continue;
-                    TimeSpan restBefore = startTime - existingShift.EndTime;
-                    TimeSpan restAfter = existingShift.StartTime - endTime;
-                    if (restBefore < requireRest && restAfter < requireRest)
-                        throw new InvalidOperationException("Дежурства пересекаются или между ними меньше двух дней отдыха.");
+                var available = guards
+                    .Where(guard => HasRequiredRest(guard, start, end, null, schedule))
+                    .OrderBy(guard => schedule
+                        .Where(shift => shift.ActualGuard == guard && shift.EndTime <= start)
+                        .Select(shift => shift.EndTime)
+                        .DefaultIfEmpty(DateTime.MinValue)
+                        .Max())
+                    .Take(agreement.GuardsPerShift)
+                    .ToList();
 
+                if (available.Count < agreement.GuardsPerShift)
+                    throw new InvalidOperationException(
+                        $"На {start:dd.MM.yyyy HH:mm} нужны {agreement.GuardsPerShift} охранников, доступны {available.Count}. Новые смены не добавлены.");
 
-                }
+                foreach (Staff guard in available)
+                    pending.Add(new DutyShift(agreement, guard, start));
             }
+
+            if (pending.Count == 0)
+                throw new InvalidOperationException("До окончания договора нет места для полной суточной смены.");
+
+            shifts.AddRange(pending);
+            return pending.AsReadOnly();
+        }
+
+        public bool CanReplaceGuard(DutyShift shift, Staff guard)
+        {
+            return shifts.Contains(shift)
+                && guard != shift.ActualGuard
+                && guard.Position.IsGuard
+                && !guard.IsDismissed
+                && HasRequiredRest(guard, shift.StartTime, shift.EndTime, shift);
+        }
+
+        private void CheckRest(Staff guard, DateTime startTime, DateTime endTime, DutyShift? excludedShift)
+        {
+            if (!HasRequiredRest(guard, startTime, endTime, excludedShift))
+                throw new InvalidOperationException("Дежурства пересекаются или между ними меньше двух дней отдыха.");
+        }
+
+        private bool HasRequiredRest(
+            Staff guard, DateTime startTime, DateTime endTime, DutyShift? excludedShift,
+            IEnumerable<DutyShift>? schedule = null)
+        {
+            TimeSpan requiredRest = TimeSpan.FromDays(2);
+
+            foreach (DutyShift existingShift in schedule ?? shifts)
+            {
+                if (existingShift == excludedShift || existingShift.ActualGuard != guard)
+                    continue;
+
+                TimeSpan restBefore = startTime - existingShift.EndTime;
+                TimeSpan restAfter = existingShift.StartTime - endTime;
+
+                if (restBefore < requiredRest && restAfter < requiredRest)
+                    return false;
+            }
+
+            return true;
+        }
     }
 }

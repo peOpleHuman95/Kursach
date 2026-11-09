@@ -24,3 +24,11 @@ C:\Users\Asus\Desktop\NSTU\Прога\2 курс\Kursc\obj\Debug\net9.0-windows\
 C:\Users\Asus\Desktop\NSTU\Прога\2 курс\Kursc\obj\Debug\net9.0-windows\ClientsWindow.g.cs
 C:\Users\Asus\Desktop\NSTU\Прога\2 курс\Kursc\obj\Debug\net9.0-windows\AgreementsWindow.baml
 C:\Users\Asus\Desktop\NSTU\Прога\2 курс\Kursc\obj\Debug\net9.0-windows\AgreementsWindow.g.cs
+C:\Users\Asus\Desktop\NSTU\Прога\2 курс\Kursc\obj\Debug\net9.0-windows\NewAgreementWindow.baml
+C:\Users\Asus\Desktop\NSTU\Прога\2 курс\Kursc\obj\Debug\net9.0-windows\NewAgreementWindow.g.cs
+C:\Users\Asus\Desktop\NSTU\Прога\2 курс\Kursc\obj\Debug\net9.0-windows\PaymentWindow.baml
+C:\Users\Asus\Desktop\NSTU\Прога\2 курс\Kursc\obj\Debug\net9.0-windows\PaymentWindow.g.cs
+C:\Users\Asus\Desktop\NSTU\Прога\2 курс\Kursc\obj\Debug\net9.0-windows\DutyWindow.baml
+C:\Users\Asus\Desktop\NSTU\Прога\2 курс\Kursc\obj\Debug\net9.0-windows\DutyWindow.g.cs
+C:\Users\Asus\Desktop\NSTU\Прога\2 курс\Kursc\obj\Debug\net9.0-windows\ClientEditorWindow.baml
+C:\Users\Asus\Desktop\NSTU\Прога\2 курс\Kursc\obj\Debug\net9.0-windows\ClientEditorWindow.g.cs
