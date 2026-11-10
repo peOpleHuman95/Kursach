@@ -10,11 +10,11 @@ none
 false
 TRACE;DEBUG;NET;NET9_0;NETCOREAPP;WINDOWS;WINDOWS7_0;NET5_0_OR_GREATER;NET6_0_OR_GREATER;NET7_0_OR_GREATER;NET8_0_OR_GREATER;NET9_0_OR_GREATER;NETCOREAPP3_0_OR_GREATER;NETCOREAPP3_1_OR_GREATER;WINDOWS7_0_OR_GREATER
 
-9-1952039283
+121365938826
 
-18-2039523706
+21-2107668126
 200-1531957912
-AgreementsWindow.xaml;ClientEditorWindow.xaml;ClientsWindow.xaml;DutyWindow.xaml;EmployeeWindow.xaml;MainWindow.xaml;NewAgreementWindow.xaml;PaymentWindow.xaml;Theme.xaml;
+Windows\AgreementsWindow.xaml;Windows\ClientEditorWindow.xaml;Windows\ClientsWindow.xaml;Windows\DutyWindow.xaml;Windows\EmployeeWindow.xaml;Windows\EquipmentWindow.xaml;Windows\InvoiceWindow.xaml;Windows\MainWindow.xaml;Windows\NewAgreementWindow.xaml;Windows\PaymentWindow.xaml;Windows\ReportsWindow.xaml;Windows\Theme.xaml;
 
 False
 

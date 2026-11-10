@@ -4,69 +4,206 @@
     {
       "Id": 1,
       "Name": "Охранник",
-      "BaseSalary": 45000,
+      "BaseSalary": 46000,
       "IsGuard": true
     },
     {
       "Id": 2,
-      "Name": "Бухгалтер",
-      "BaseSalary": 55000,
-      "IsGuard": false
+      "Name": "Старший смены",
+      "BaseSalary": 58000,
+      "IsGuard": true
     },
     {
       "Id": 3,
-      "Name": "Директор",
-      "BaseSalary": 80000,
+      "Name": "Руководитель",
+      "BaseSalary": 82000,
+      "IsGuard": false
+    },
+    {
+      "Id": 4,
+      "Name": "Бухгалтер",
+      "BaseSalary": 59000,
+      "IsGuard": false
+    },
+    {
+      "Id": 5,
+      "Name": "Диспетчер",
+      "BaseSalary": 43000,
       "IsGuard": false
     }
   ],
   "Employees": [
     {
-      "PositionId": 1,
-      "FirstName": "Иван",
-      "LastName": "Иванов",
-      "MiddleName": "Иванович",
-      "Address": "Учебный город, ул. Примерная, д. 1",
-      "PersonalAllowance": 5000,
+      "PositionId": 2,
+      "FirstName": "Андрей",
+      "LastName": "Волков",
+      "MiddleName": "Сергеевич",
+      "Address": "ул. Учебная, д. 1",
+      "PersonalAllowance": 0,
       "CanCarryWeapon": true,
-      "CertificateNumber": "УЧЕБНОЕ-УД-1",
-      "LicenseNumber": "УЧЕБНАЯ-ЛИЦ-1",
-      "Inn": "ТЕСТ-ИНН-1",
-      "PfrNumber": "ТЕСТ-ПФР-1",
+      "CertificateNumber": "ДЕМО-У-001",
+      "LicenseNumber": "ДЕМО-Л-001",
+      "Inn": "",
+      "PfrNumber": "",
       "DismissalDate": null,
       "Documents": {
-        "Passport": "Учебный паспорт 1",
+        "Passport": "",
         "MilitaryIdCard": false,
-        "EmploymentRecordBook": "Учебная трудовая 1",
-        "EducationalDocument": "Учебный диплом",
+        "EmploymentRecordBook": "",
+        "EducationalDocument": "",
         "CriminalRecord": false,
-        "MedicalReport": true,
-        "MedicalBook": "Учебная медкнижка 1"
+        "MedicalReport": false,
+        "MedicalBook": ""
       },
       "Weapon": null,
       "Equipment": []
     },
     {
       "PositionId": 1,
-      "FirstName": "Алексей",
-      "LastName": "Петров",
-      "MiddleName": "Сергеевич",
-      "Address": "Учебный город, ул. Примерная, д. 2",
+      "FirstName": "Павел",
+      "LastName": "Лебедев",
+      "MiddleName": "Игоревич",
+      "Address": "ул. Учебная, д. 2",
       "PersonalAllowance": 0,
-      "CanCarryWeapon": false,
-      "CertificateNumber": "УЧЕБНОЕ-УД-2",
-      "LicenseNumber": "УЧЕБНАЯ-ЛИЦ-2",
-      "Inn": "ТЕСТ-ИНН-2",
-      "PfrNumber": "ТЕСТ-ПФР-2",
+      "CanCarryWeapon": true,
+      "CertificateNumber": "ДЕМО-У-002",
+      "LicenseNumber": "ДЕМО-Л-002",
+      "Inn": "",
+      "PfrNumber": "",
       "DismissalDate": null,
       "Documents": {
-        "Passport": "Учебный паспорт 2",
+        "Passport": "",
         "MilitaryIdCard": false,
-        "EmploymentRecordBook": "Учебная трудовая 2",
-        "EducationalDocument": "Учебный диплом",
+        "EmploymentRecordBook": "",
+        "EducationalDocument": "",
         "CriminalRecord": false,
-        "MedicalReport": true,
-        "MedicalBook": "Учебная медкнижка 2"
+        "MedicalReport": false,
+        "MedicalBook": ""
+      },
+      "Weapon": null,
+      "Equipment": []
+    },
+    {
+      "PositionId": 1,
+      "FirstName": "Мария",
+      "LastName": "Соколова",
+      "MiddleName": "Андреевна",
+      "Address": "ул. Учебная, д. 3",
+      "PersonalAllowance": 0,
+      "CanCarryWeapon": true,
+      "CertificateNumber": "ДЕМО-У-003",
+      "LicenseNumber": "ДЕМО-Л-003",
+      "Inn": "",
+      "PfrNumber": "",
+      "DismissalDate": null,
+      "Documents": {
+        "Passport": "",
+        "MilitaryIdCard": false,
+        "EmploymentRecordBook": "",
+        "EducationalDocument": "",
+        "CriminalRecord": false,
+        "MedicalReport": false,
+        "MedicalBook": ""
+      },
+      "Weapon": null,
+      "Equipment": []
+    },
+    {
+      "PositionId": 1,
+      "FirstName": "Илья",
+      "LastName": "Кузнецов",
+      "MiddleName": "Викторович",
+      "Address": "ул. Учебная, д. 4",
+      "PersonalAllowance": 4500,
+      "CanCarryWeapon": false,
+      "CertificateNumber": "ДЕМО-У-004",
+      "LicenseNumber": "ДЕМО-Л-004",
+      "Inn": "",
+      "PfrNumber": "",
+      "DismissalDate": null,
+      "Documents": {
+        "Passport": "",
+        "MilitaryIdCard": false,
+        "EmploymentRecordBook": "",
+        "EducationalDocument": "",
+        "CriminalRecord": false,
+        "MedicalReport": false,
+        "MedicalBook": ""
+      },
+      "Weapon": null,
+      "Equipment": []
+    },
+    {
+      "PositionId": 1,
+      "FirstName": "Елена",
+      "LastName": "Орлова",
+      "MiddleName": "Олеговна",
+      "Address": "ул. Учебная, д. 5",
+      "PersonalAllowance": 0,
+      "CanCarryWeapon": false,
+      "CertificateNumber": "ДЕМО-У-005",
+      "LicenseNumber": "ДЕМО-Л-005",
+      "Inn": "",
+      "PfrNumber": "",
+      "DismissalDate": null,
+      "Documents": {
+        "Passport": "",
+        "MilitaryIdCard": false,
+        "EmploymentRecordBook": "",
+        "EducationalDocument": "",
+        "CriminalRecord": false,
+        "MedicalReport": false,
+        "MedicalBook": ""
+      },
+      "Weapon": null,
+      "Equipment": []
+    },
+    {
+      "PositionId": 1,
+      "FirstName": "Роман",
+      "LastName": "Фёдоров",
+      "MiddleName": "Алексеевич",
+      "Address": "ул. Учебная, д. 6",
+      "PersonalAllowance": 0,
+      "CanCarryWeapon": false,
+      "CertificateNumber": "ДЕМО-У-006",
+      "LicenseNumber": "ДЕМО-Л-006",
+      "Inn": "",
+      "PfrNumber": "",
+      "DismissalDate": null,
+      "Documents": {
+        "Passport": "",
+        "MilitaryIdCard": false,
+        "EmploymentRecordBook": "",
+        "EducationalDocument": "",
+        "CriminalRecord": false,
+        "MedicalReport": false,
+        "MedicalBook": ""
+      },
+      "Weapon": null,
+      "Equipment": []
+    },
+    {
+      "PositionId": 2,
+      "FirstName": "Артём",
+      "LastName": "Морозов",
+      "MiddleName": "Дмитриевич",
+      "Address": "ул. Учебная, д. 7",
+      "PersonalAllowance": 0,
+      "CanCarryWeapon": false,
+      "CertificateNumber": "ДЕМО-У-007",
+      "LicenseNumber": "ДЕМО-Л-007",
+      "Inn": "",
+      "PfrNumber": "",
+      "DismissalDate": null,
+      "Documents": {
+        "Passport": "",
+        "MilitaryIdCard": false,
+        "EmploymentRecordBook": "",
+        "EducationalDocument": "",
+        "CriminalRecord": false,
+        "MedicalReport": false,
+        "MedicalBook": ""
       },
       "Weapon": null,
       "Equipment": []
@@ -74,71 +211,271 @@
     {
       "PositionId": 1,
       "FirstName": "Анна",
-      "LastName": "Сидорова",
-      "MiddleName": "Викторовна",
-      "Address": "Учебный город, ул. Примерная, д. 3",
-      "PersonalAllowance": 3000,
+      "LastName": "Крылова",
+      "MiddleName": "Павловна",
+      "Address": "ул. Учебная, д. 8",
+      "PersonalAllowance": 4500,
       "CanCarryWeapon": false,
-      "CertificateNumber": "УЧЕБНОЕ-УД-3",
-      "LicenseNumber": "УЧЕБНАЯ-ЛИЦ-3",
-      "Inn": "ТЕСТ-ИНН-3",
-      "PfrNumber": "ТЕСТ-ПФР-3",
+      "CertificateNumber": "ДЕМО-У-008",
+      "LicenseNumber": "ДЕМО-Л-008",
+      "Inn": "",
+      "PfrNumber": "",
       "DismissalDate": null,
       "Documents": {
-        "Passport": "Учебный паспорт 3",
+        "Passport": "",
         "MilitaryIdCard": false,
-        "EmploymentRecordBook": "Учебная трудовая 3",
-        "EducationalDocument": "Учебный диплом",
+        "EmploymentRecordBook": "",
+        "EducationalDocument": "",
         "CriminalRecord": false,
-        "MedicalReport": true,
-        "MedicalBook": "Учебная медкнижка 3"
+        "MedicalReport": false,
+        "MedicalBook": ""
       },
       "Weapon": null,
       "Equipment": []
     },
     {
       "PositionId": 1,
-      "FirstName": "Дмитрий",
-      "LastName": "Смирнов",
-      "MiddleName": "Андреевич",
-      "Address": "Учебный город, ул. Примерная, д. 4",
-      "PersonalAllowance": 2000,
+      "FirstName": "Денис",
+      "LastName": "Новиков",
+      "MiddleName": "Олегович",
+      "Address": "ул. Учебная, д. 9",
+      "PersonalAllowance": 0,
       "CanCarryWeapon": false,
-      "CertificateNumber": "УЧЕБНОЕ-УД-4",
-      "LicenseNumber": "УЧЕБНАЯ-ЛИЦ-4",
-      "Inn": "ТЕСТ-ИНН-4",
-      "PfrNumber": "ТЕСТ-ПФР-4",
+      "CertificateNumber": "ДЕМО-У-009",
+      "LicenseNumber": "ДЕМО-Л-009",
+      "Inn": "",
+      "PfrNumber": "",
       "DismissalDate": null,
       "Documents": {
-        "Passport": "Учебный паспорт 4",
+        "Passport": "",
         "MilitaryIdCard": false,
-        "EmploymentRecordBook": "Учебная трудовая 4",
-        "EducationalDocument": "Учебный диплом",
+        "EmploymentRecordBook": "",
+        "EducationalDocument": "",
         "CriminalRecord": false,
-        "MedicalReport": true,
-        "MedicalBook": "Учебная медкнижка 4"
+        "MedicalReport": false,
+        "MedicalBook": ""
+      },
+      "Weapon": null,
+      "Equipment": []
+    },
+    {
+      "PositionId": 1,
+      "FirstName": "Михаил",
+      "LastName": "Козлов",
+      "MiddleName": "Ильич",
+      "Address": "ул. Учебная, д. 10",
+      "PersonalAllowance": 0,
+      "CanCarryWeapon": false,
+      "CertificateNumber": "ДЕМО-У-010",
+      "LicenseNumber": "ДЕМО-Л-010",
+      "Inn": "",
+      "PfrNumber": "",
+      "DismissalDate": null,
+      "Documents": {
+        "Passport": "",
+        "MilitaryIdCard": false,
+        "EmploymentRecordBook": "",
+        "EducationalDocument": "",
+        "CriminalRecord": false,
+        "MedicalReport": false,
+        "MedicalBook": ""
+      },
+      "Weapon": null,
+      "Equipment": []
+    },
+    {
+      "PositionId": 1,
+      "FirstName": "Дарья",
+      "LastName": "Васильева",
+      "MiddleName": "Сергеевна",
+      "Address": "ул. Учебная, д. 11",
+      "PersonalAllowance": 0,
+      "CanCarryWeapon": false,
+      "CertificateNumber": "ДЕМО-У-011",
+      "LicenseNumber": "ДЕМО-Л-011",
+      "Inn": "",
+      "PfrNumber": "",
+      "DismissalDate": null,
+      "Documents": {
+        "Passport": "",
+        "MilitaryIdCard": false,
+        "EmploymentRecordBook": "",
+        "EducationalDocument": "",
+        "CriminalRecord": false,
+        "MedicalReport": false,
+        "MedicalBook": ""
+      },
+      "Weapon": null,
+      "Equipment": []
+    },
+    {
+      "PositionId": 1,
+      "FirstName": "Кирилл",
+      "LastName": "Семёнов",
+      "MiddleName": "Петрович",
+      "Address": "ул. Учебная, д. 12",
+      "PersonalAllowance": 4500,
+      "CanCarryWeapon": false,
+      "CertificateNumber": "ДЕМО-У-012",
+      "LicenseNumber": "ДЕМО-Л-012",
+      "Inn": "",
+      "PfrNumber": "",
+      "DismissalDate": null,
+      "Documents": {
+        "Passport": "",
+        "MilitaryIdCard": false,
+        "EmploymentRecordBook": "",
+        "EducationalDocument": "",
+        "CriminalRecord": false,
+        "MedicalReport": false,
+        "MedicalBook": ""
       },
       "Weapon": null,
       "Equipment": []
     },
     {
       "PositionId": 2,
-      "FirstName": "Елена",
-      "LastName": "Кузнецова",
-      "MiddleName": "Павловна",
-      "Address": "Учебный город, ул. Примерная, д. 5",
-      "PersonalAllowance": 4000,
+      "FirstName": "Ольга",
+      "LastName": "Романова",
+      "MiddleName": "Максимовна",
+      "Address": "ул. Учебная, д. 13",
+      "PersonalAllowance": 0,
       "CanCarryWeapon": false,
-      "CertificateNumber": "",
-      "LicenseNumber": "",
-      "Inn": "ТЕСТ-ИНН-5",
-      "PfrNumber": "ТЕСТ-ПФР-5",
+      "CertificateNumber": "ДЕМО-У-013",
+      "LicenseNumber": "ДЕМО-Л-013",
+      "Inn": "",
+      "PfrNumber": "",
       "DismissalDate": null,
       "Documents": {
-        "Passport": "Учебный паспорт 5",
+        "Passport": "",
         "MilitaryIdCard": false,
-        "EmploymentRecordBook": "Учебная трудовая 5",
-        "EducationalDocument": "Учебный диплом",
+        "EmploymentRecordBook": "",
+        "EducationalDocument": "",
+        "CriminalRecord": false,
+        "MedicalReport": false,
+        "MedicalBook": ""
+      },
+      "Weapon": null,
+      "Equipment": []
+    },
+    {
+      "PositionId": 1,
+      "FirstName": "Максим",
+      "LastName": "Егоров",
+      "MiddleName": "Андреевич",
+      "Address": "ул. Учебная, д. 14",
+      "PersonalAllowance": 0,
+      "CanCarryWeapon": false,
+      "CertificateNumber": "ДЕМО-У-014",
+      "LicenseNumber": "ДЕМО-Л-014",
+      "Inn": "",
+      "PfrNumber": "",
+      "DismissalDate": null,
+      "Documents": {
+        "Passport": "",
+        "MilitaryIdCard": false,
+        "EmploymentRecordBook": "",
+        "EducationalDocument": "",
+        "CriminalRecord": false,
+        "MedicalReport": false,
+        "MedicalBook": ""
+      },
+      "Weapon": null,
+      "Equipment": []
+    },
+    {
+      "PositionId": 1,
+      "FirstName": "Олег",
+      "LastName": "Никитин",
+      "MiddleName": "Иванович",
+      "Address": "ул. Учебная, д. 15",
+      "PersonalAllowance": 0,
+      "CanCarryWeapon": false,
+      "CertificateNumber": "ДЕМО-У-015",
+      "LicenseNumber": "ДЕМО-Л-015",
+      "Inn": "",
+      "PfrNumber": "",
+      "DismissalDate": null,
+      "Documents": {
+        "Passport": "",
+        "MilitaryIdCard": false,
+        "EmploymentRecordBook": "",
+        "EducationalDocument": "",
+        "CriminalRecord": false,
+        "MedicalReport": false,
+        "MedicalBook": ""
+      },
+      "Weapon": null,
+      "Equipment": []
+    },
+    {
+      "PositionId": 1,
+      "FirstName": "Вера",
+      "LastName": "Алексеева",
+      "MiddleName": "Игоревна",
+      "Address": "ул. Учебная, д. 16",
+      "PersonalAllowance": 4500,
+      "CanCarryWeapon": false,
+      "CertificateNumber": "ДЕМО-У-016",
+      "LicenseNumber": "ДЕМО-Л-016",
+      "Inn": "",
+      "PfrNumber": "",
+      "DismissalDate": null,
+      "Documents": {
+        "Passport": "",
+        "MilitaryIdCard": false,
+        "EmploymentRecordBook": "",
+        "EducationalDocument": "",
+        "CriminalRecord": false,
+        "MedicalReport": false,
+        "MedicalBook": ""
+      },
+      "Weapon": null,
+      "Equipment": []
+    },
+    {
+      "PositionId": 1,
+      "FirstName": "Сергей",
+      "LastName": "Белов",
+      "MiddleName": "Дмитриевич",
+      "Address": "ул. Учебная, д. 17",
+      "PersonalAllowance": 0,
+      "CanCarryWeapon": false,
+      "CertificateNumber": "ДЕМО-У-017",
+      "LicenseNumber": "ДЕМО-Л-017",
+      "Inn": "",
+      "PfrNumber": "",
+      "DismissalDate": null,
+      "Documents": {
+        "Passport": "",
+        "MilitaryIdCard": false,
+        "EmploymentRecordBook": "",
+        "EducationalDocument": "",
+        "CriminalRecord": false,
+        "MedicalReport": false,
+        "MedicalBook": ""
+      },
+      "Weapon": null,
+      "Equipment": []
+    },
+    {
+      "PositionId": 1,
+      "FirstName": "Никита",
+      "LastName": "Зайцев",
+      "MiddleName": "Павлович",
+      "Address": "ул. Учебная, д. 18",
+      "PersonalAllowance": 0,
+      "CanCarryWeapon": false,
+      "CertificateNumber": "ДЕМО-У-018",
+      "LicenseNumber": "ДЕМО-Л-018",
+      "Inn": "",
+      "PfrNumber": "",
+      "DismissalDate": null,
+      "Documents": {
+        "Passport": "",
+        "MilitaryIdCard": false,
+        "EmploymentRecordBook": "",
+        "EducationalDocument": "",
         "CriminalRecord": false,
         "MedicalReport": false,
         "MedicalBook": ""
@@ -148,22 +485,222 @@
     },
     {
       "PositionId": 3,
-      "FirstName": "Михаил",
-      "LastName": "Соколов",
-      "MiddleName": "Олегович",
-      "Address": "Учебный город, ул. Примерная, д. 6",
-      "PersonalAllowance": 10000,
+      "FirstName": "Виктор",
+      "LastName": "Комаров",
+      "MiddleName": "Евгеньевич",
+      "Address": "ул. Учебная, д. 19",
+      "PersonalAllowance": 0,
       "CanCarryWeapon": false,
-      "CertificateNumber": "",
+      "CertificateNumber": "ДЕМО-У-019",
       "LicenseNumber": "",
-      "Inn": "ТЕСТ-ИНН-6",
-      "PfrNumber": "ТЕСТ-ПФР-6",
+      "Inn": "",
+      "PfrNumber": "",
       "DismissalDate": null,
       "Documents": {
-        "Passport": "Учебный паспорт 6",
+        "Passport": "",
         "MilitaryIdCard": false,
-        "EmploymentRecordBook": "Учебная трудовая 6",
-        "EducationalDocument": "Учебный диплом",
+        "EmploymentRecordBook": "",
+        "EducationalDocument": "",
+        "CriminalRecord": false,
+        "MedicalReport": false,
+        "MedicalBook": ""
+      },
+      "Weapon": null,
+      "Equipment": []
+    },
+    {
+      "PositionId": 4,
+      "FirstName": "Ирина",
+      "LastName": "Котова",
+      "MiddleName": "Алексеевна",
+      "Address": "ул. Учебная, д. 20",
+      "PersonalAllowance": 4500,
+      "CanCarryWeapon": false,
+      "CertificateNumber": "ДЕМО-У-020",
+      "LicenseNumber": "",
+      "Inn": "",
+      "PfrNumber": "",
+      "DismissalDate": null,
+      "Documents": {
+        "Passport": "",
+        "MilitaryIdCard": false,
+        "EmploymentRecordBook": "",
+        "EducationalDocument": "",
+        "CriminalRecord": false,
+        "MedicalReport": false,
+        "MedicalBook": ""
+      },
+      "Weapon": null,
+      "Equipment": []
+    },
+    {
+      "PositionId": 5,
+      "FirstName": "Юлия",
+      "LastName": "Полякова",
+      "MiddleName": "Викторовна",
+      "Address": "ул. Учебная, д. 21",
+      "PersonalAllowance": 0,
+      "CanCarryWeapon": false,
+      "CertificateNumber": "ДЕМО-У-021",
+      "LicenseNumber": "",
+      "Inn": "",
+      "PfrNumber": "",
+      "DismissalDate": null,
+      "Documents": {
+        "Passport": "",
+        "MilitaryIdCard": false,
+        "EmploymentRecordBook": "",
+        "EducationalDocument": "",
+        "CriminalRecord": false,
+        "MedicalReport": false,
+        "MedicalBook": ""
+      },
+      "Weapon": null,
+      "Equipment": []
+    },
+    {
+      "PositionId": 5,
+      "FirstName": "Антон",
+      "LastName": "Савельев",
+      "MiddleName": "Олегович",
+      "Address": "ул. Учебная, д. 22",
+      "PersonalAllowance": 0,
+      "CanCarryWeapon": false,
+      "CertificateNumber": "ДЕМО-У-022",
+      "LicenseNumber": "",
+      "Inn": "",
+      "PfrNumber": "",
+      "DismissalDate": null,
+      "Documents": {
+        "Passport": "",
+        "MilitaryIdCard": false,
+        "EmploymentRecordBook": "",
+        "EducationalDocument": "",
+        "CriminalRecord": false,
+        "MedicalReport": false,
+        "MedicalBook": ""
+      },
+      "Weapon": null,
+      "Equipment": []
+    },
+    {
+      "PositionId": 1,
+      "FirstName": "Пётр",
+      "LastName": "Макаров",
+      "MiddleName": "Иванович",
+      "Address": "ул. Учебная, д. 23",
+      "PersonalAllowance": 0,
+      "CanCarryWeapon": false,
+      "CertificateNumber": "ДЕМО-У-023",
+      "LicenseNumber": "ДЕМО-Л-023",
+      "Inn": "",
+      "PfrNumber": "",
+      "DismissalDate": "2026-09-10T00:00:00",
+      "Documents": {
+        "Passport": "",
+        "MilitaryIdCard": false,
+        "EmploymentRecordBook": "",
+        "EducationalDocument": "",
+        "CriminalRecord": false,
+        "MedicalReport": false,
+        "MedicalBook": ""
+      },
+      "Weapon": null,
+      "Equipment": []
+    },
+    {
+      "PositionId": 1,
+      "FirstName": "Александр",
+      "LastName": "Громов",
+      "MiddleName": "Ильич",
+      "Address": "ул. Учебная, д. 41",
+      "PersonalAllowance": 0,
+      "CanCarryWeapon": false,
+      "CertificateNumber": "ДЕМО-АРХ-001",
+      "LicenseNumber": "",
+      "Inn": "",
+      "PfrNumber": "",
+      "DismissalDate": "2023-05-19T00:00:00",
+      "Documents": {
+        "Passport": "",
+        "MilitaryIdCard": false,
+        "EmploymentRecordBook": "",
+        "EducationalDocument": "",
+        "CriminalRecord": false,
+        "MedicalReport": false,
+        "MedicalBook": ""
+      },
+      "Weapon": null,
+      "Equipment": []
+    },
+    {
+      "PositionId": 5,
+      "FirstName": "Наталья",
+      "LastName": "Мельникова",
+      "MiddleName": "Викторовна",
+      "Address": "ул. Учебная, д. 42",
+      "PersonalAllowance": 0,
+      "CanCarryWeapon": false,
+      "CertificateNumber": "ДЕМО-АРХ-002",
+      "LicenseNumber": "",
+      "Inn": "",
+      "PfrNumber": "",
+      "DismissalDate": "2024-11-08T00:00:00",
+      "Documents": {
+        "Passport": "",
+        "MilitaryIdCard": false,
+        "EmploymentRecordBook": "",
+        "EducationalDocument": "",
+        "CriminalRecord": false,
+        "MedicalReport": false,
+        "MedicalBook": ""
+      },
+      "Weapon": null,
+      "Equipment": []
+    },
+    {
+      "PositionId": 2,
+      "FirstName": "Владислав",
+      "LastName": "Рябов",
+      "MiddleName": "Олегович",
+      "Address": "ул. Учебная, д. 43",
+      "PersonalAllowance": 0,
+      "CanCarryWeapon": false,
+      "CertificateNumber": "ДЕМО-АРХ-003",
+      "LicenseNumber": "",
+      "Inn": "",
+      "PfrNumber": "",
+      "DismissalDate": "2025-07-25T00:00:00",
+      "Documents": {
+        "Passport": "",
+        "MilitaryIdCard": false,
+        "EmploymentRecordBook": "",
+        "EducationalDocument": "",
+        "CriminalRecord": false,
+        "MedicalReport": false,
+        "MedicalBook": ""
+      },
+      "Weapon": null,
+      "Equipment": []
+    },
+    {
+      "PositionId": 1,
+      "FirstName": "Татьяна",
+      "LastName": "Киселёва",
+      "MiddleName": "Сергеевна",
+      "Address": "ул. Учебная, д. 44",
+      "PersonalAllowance": 0,
+      "CanCarryWeapon": false,
+      "CertificateNumber": "ДЕМО-АРХ-004",
+      "LicenseNumber": "",
+      "Inn": "",
+      "PfrNumber": "",
+      "DismissalDate": "2026-10-16T00:00:00",
+      "Documents": {
+        "Passport": "",
+        "MilitaryIdCard": false,
+        "EmploymentRecordBook": "",
+        "EducationalDocument": "",
         "CriminalRecord": false,
         "MedicalReport": false,
         "MedicalBook": ""
@@ -176,8 +713,8 @@
     {
       "Id": 1,
       "Type": "Legal",
-      "Address": "ул Пупкина, д Подзалупкина 52/67",
-      "NameFirm": "Говномессы",
+      "Address": "ул. Логистическая, д. 14",
+      "NameFirm": "ООО «Северный терминал»",
       "FirstName": "",
       "LastName": "",
       "MiddleName": "",
@@ -185,253 +722,566 @@
     },
     {
       "Id": 2,
+      "Type": "Legal",
+      "Address": "ул. Проектная, д. 8",
+      "NameFirm": "ООО «Горизонт»",
+      "FirstName": "",
+      "LastName": "",
+      "MiddleName": "",
+      "Passport": ""
+    },
+    {
+      "Id": 3,
+      "Type": "Legal",
+      "Address": "ул. Торговая, д. 21",
+      "NameFirm": "ООО «Клён Маркет»",
+      "FirstName": "",
+      "LastName": "",
+      "MiddleName": "",
+      "Passport": ""
+    },
+    {
+      "Id": 4,
+      "Type": "Legal",
+      "Address": "ул. Выставочная, д. 5",
+      "NameFirm": "ООО «Арт Площадка»",
+      "FirstName": "",
+      "LastName": "",
+      "MiddleName": "",
+      "Passport": ""
+    },
+    {
+      "Id": 5,
       "Type": "Individual",
-      "Address": "ул Парашная, д Подшконкой 13",
+      "Address": "ул. Учебная, д. 31",
       "NameFirm": "",
-      "FirstName": "Говно",
-      "LastName": "Сладкое",
-      "MiddleName": "Мамонтовича",
-      "Passport": "0228 526769"
+      "FirstName": "Алина",
+      "LastName": "Смирнова",
+      "MiddleName": "Олеговна",
+      "Passport": "ДЕМО-П-001"
+    },
+    {
+      "Id": 6,
+      "Type": "Individual",
+      "Address": "ул. Учебная, д. 32",
+      "NameFirm": "",
+      "FirstName": "Алексей",
+      "LastName": "Попов",
+      "MiddleName": "Викторович",
+      "Passport": "ДЕМО-П-002"
     }
   ],
   "Agreements": [
     {
-      "Type": "Event",
-      "ClientId": 2,
-      "NumberAgreement": "1337",
-      "DateAgreement": "2027-02-28T00:00:00",
-      "DateEndContract": "2027-11-28T00:00:00",
-      "ServiceAddress": "Пушкина 17",
-      "ServiceType": "отсос",
-      "Rate": 1500,
-      "DateEvent": "2027-02-28T10:00:00",
-      "EndEvent": "2027-11-27T22:00:00",
-      "ParticipantsCount": 10,
-      "ParticipantsPerGuard": 5,
-      "Area": 0,
-      "AreaPerGuard": 0,
-      "EmployeeIds": [
-        1,
-        3
-      ],
-      "Payments": []
-    },
-    {
       "Type": "Object",
       "ClientId": 1,
-      "NumberAgreement": "ОБ-001",
-      "DateAgreement": "2026-12-01T00:00:00",
-      "DateEndContract": "2026-12-31T00:00:00",
-      "ServiceAddress": "ул. Примерная, д. 15",
+      "NumberAgreement": "ОБ-101",
+      "DateAgreement": "2026-11-01T00:00:00",
+      "DateEndContract": "2027-01-31T00:00:00",
+      "ServiceAddress": "ул. Логистическая, д. 14",
       "ServiceType": "Склад",
       "Rate": 30000,
       "DateEvent": "0001-01-01T00:00:00",
       "EndEvent": "0001-01-01T00:00:00",
       "ParticipantsCount": 0,
       "ParticipantsPerGuard": 0,
-      "Area": 1200,
+      "Area": 2200,
       "AreaPerGuard": 1500,
       "EmployeeIds": [
         1,
+        2,
         3,
-        2
+        4,
+        5,
+        6
+      ],
+      "Payments": [
+        {
+          "Sum": 90000,
+          "DatePayment": "2026-11-05T00:00:00",
+          "NumberDocument": "ДЕМО-ПЛ-001"
+        }
+      ]
+    },
+    {
+      "Type": "Object",
+      "ClientId": 2,
+      "NumberAgreement": "ОБ-102",
+      "DateAgreement": "2026-11-01T00:00:00",
+      "DateEndContract": "2026-11-30T00:00:00",
+      "ServiceAddress": "ул. Проектная, д. 8",
+      "ServiceType": "Бизнес-центр",
+      "Rate": 33000,
+      "DateEvent": "0001-01-01T00:00:00",
+      "EndEvent": "0001-01-01T00:00:00",
+      "ParticipantsCount": 0,
+      "ParticipantsPerGuard": 0,
+      "Area": 260,
+      "AreaPerGuard": 300,
+      "EmployeeIds": [
+        7,
+        8,
+        9
+      ],
+      "Payments": [
+        {
+          "Sum": 99000,
+          "DatePayment": "2026-11-07T00:00:00",
+          "NumberDocument": "ДЕМО-ПЛ-002"
+        }
+      ]
+    },
+    {
+      "Type": "Object",
+      "ClientId": 3,
+      "NumberAgreement": "ОБ-103",
+      "DateAgreement": "2026-12-01T00:00:00",
+      "DateEndContract": "2026-12-31T00:00:00",
+      "ServiceAddress": "ул. Торговая, д. 21",
+      "ServiceType": "Магазин",
+      "Rate": 34000,
+      "DateEvent": "0001-01-01T00:00:00",
+      "EndEvent": "0001-01-01T00:00:00",
+      "ParticipantsCount": 0,
+      "ParticipantsPerGuard": 0,
+      "Area": 145,
+      "AreaPerGuard": 150,
+      "EmployeeIds": [
+        10,
+        11,
+        12
+      ],
+      "Payments": []
+    },
+    {
+      "Type": "Event",
+      "ClientId": 5,
+      "NumberAgreement": "МР-201",
+      "DateAgreement": "2026-11-03T00:00:00",
+      "DateEndContract": "2026-11-06T00:00:00",
+      "ServiceAddress": "ул. Учебная, д. 31",
+      "ServiceType": "Семейный юбилей",
+      "Rate": 900,
+      "DateEvent": "2026-11-06T14:00:00",
+      "EndEvent": "2026-11-06T19:00:00",
+      "ParticipantsCount": 45,
+      "ParticipantsPerGuard": 30,
+      "Area": 0,
+      "AreaPerGuard": 0,
+      "EmployeeIds": [
+        13,
+        14
+      ],
+      "Payments": [
+        {
+          "Sum": 9000,
+          "DatePayment": "2026-11-06T00:00:00",
+          "NumberDocument": "ДЕМО-ПЛ-003"
+        }
+      ]
+    },
+    {
+      "Type": "Event",
+      "ClientId": 4,
+      "NumberAgreement": "МР-202",
+      "DateAgreement": "2026-11-13T00:00:00",
+      "DateEndContract": "2026-11-16T00:00:00",
+      "ServiceAddress": "ул. Выставочная, д. 5",
+      "ServiceType": "Выставка локальных производителей",
+      "Rate": 900,
+      "DateEvent": "2026-11-16T14:00:00",
+      "EndEvent": "2026-11-16T21:00:00",
+      "ParticipantsCount": 110,
+      "ParticipantsPerGuard": 40,
+      "Area": 0,
+      "AreaPerGuard": 0,
+      "EmployeeIds": [
+        13,
+        14,
+        15
+      ],
+      "Payments": []
+    },
+    {
+      "Type": "Event",
+      "ClientId": 6,
+      "NumberAgreement": "МР-203",
+      "DateAgreement": "2026-11-16T00:00:00",
+      "DateEndContract": "2026-11-19T00:00:00",
+      "ServiceAddress": "ул. Учебная, д. 32",
+      "ServiceType": "Частный приём",
+      "Rate": 900,
+      "DateEvent": "2026-11-19T14:00:00",
+      "EndEvent": "2026-11-19T18:00:00",
+      "ParticipantsCount": 30,
+      "ParticipantsPerGuard": 30,
+      "Area": 0,
+      "AreaPerGuard": 0,
+      "EmployeeIds": [
+        17
       ],
       "Payments": []
     }
   ],
   "Shifts": [
     {
-      "AgreementId": 2,
+      "AgreementId": 1,
       "PlannedGuardId": 1,
-      "StartTime": "2026-12-01T08:00:00",
+      "StartTime": "2026-11-01T08:00:00",
       "Replacements": []
     },
     {
-      "AgreementId": 2,
+      "AgreementId": 1,
       "PlannedGuardId": 2,
-      "StartTime": "2026-12-02T08:00:00",
+      "StartTime": "2026-11-01T08:00:00",
       "Replacements": []
     },
     {
-      "AgreementId": 2,
+      "AgreementId": 1,
       "PlannedGuardId": 3,
-      "StartTime": "2026-12-03T08:00:00",
+      "StartTime": "2026-11-02T08:00:00",
+      "Replacements": []
+    },
+    {
+      "AgreementId": 1,
+      "PlannedGuardId": 4,
+      "StartTime": "2026-11-02T08:00:00",
+      "Replacements": []
+    },
+    {
+      "AgreementId": 1,
+      "PlannedGuardId": 5,
+      "StartTime": "2026-11-03T08:00:00",
+      "Replacements": []
+    },
+    {
+      "AgreementId": 1,
+      "PlannedGuardId": 6,
+      "StartTime": "2026-11-03T08:00:00",
+      "Replacements": []
+    },
+    {
+      "AgreementId": 1,
+      "PlannedGuardId": 1,
+      "StartTime": "2026-11-04T08:00:00",
+      "Replacements": []
+    },
+    {
+      "AgreementId": 1,
+      "PlannedGuardId": 2,
+      "StartTime": "2026-11-04T08:00:00",
+      "Replacements": []
+    },
+    {
+      "AgreementId": 1,
+      "PlannedGuardId": 3,
+      "StartTime": "2026-11-05T08:00:00",
+      "Replacements": []
+    },
+    {
+      "AgreementId": 1,
+      "PlannedGuardId": 4,
+      "StartTime": "2026-11-05T08:00:00",
+      "Replacements": []
+    },
+    {
+      "AgreementId": 1,
+      "PlannedGuardId": 5,
+      "StartTime": "2026-11-06T08:00:00",
+      "Replacements": []
+    },
+    {
+      "AgreementId": 1,
+      "PlannedGuardId": 6,
+      "StartTime": "2026-11-06T08:00:00",
+      "Replacements": []
+    },
+    {
+      "AgreementId": 1,
+      "PlannedGuardId": 1,
+      "StartTime": "2026-11-07T08:00:00",
+      "Replacements": []
+    },
+    {
+      "AgreementId": 1,
+      "PlannedGuardId": 2,
+      "StartTime": "2026-11-07T08:00:00",
+      "Replacements": []
+    },
+    {
+      "AgreementId": 1,
+      "PlannedGuardId": 3,
+      "StartTime": "2026-11-08T08:00:00",
+      "Replacements": []
+    },
+    {
+      "AgreementId": 1,
+      "PlannedGuardId": 4,
+      "StartTime": "2026-11-08T08:00:00",
+      "Replacements": []
+    },
+    {
+      "AgreementId": 1,
+      "PlannedGuardId": 5,
+      "StartTime": "2026-11-09T08:00:00",
+      "Replacements": []
+    },
+    {
+      "AgreementId": 1,
+      "PlannedGuardId": 6,
+      "StartTime": "2026-11-09T08:00:00",
+      "Replacements": []
+    },
+    {
+      "AgreementId": 1,
+      "PlannedGuardId": 1,
+      "StartTime": "2026-11-10T08:00:00",
       "Replacements": [
         {
-          "PreviousGuardId": 3,
-          "NewGuardId": 4,
-          "Reason": "Заболела"
-        },
-        {
-          "PreviousGuardId": 4,
-          "NewGuardId": 3,
-          "Reason": "Выздоровела"
+          "PreviousGuardId": 1,
+          "NewGuardId": 18,
+          "Reason": "Плановый медосмотр"
         }
       ]
     },
     {
-      "AgreementId": 2,
+      "AgreementId": 1,
+      "PlannedGuardId": 2,
+      "StartTime": "2026-11-10T08:00:00",
+      "Replacements": []
+    },
+    {
+      "AgreementId": 1,
+      "PlannedGuardId": 3,
+      "StartTime": "2026-11-11T08:00:00",
+      "Replacements": []
+    },
+    {
+      "AgreementId": 1,
+      "PlannedGuardId": 4,
+      "StartTime": "2026-11-11T08:00:00",
+      "Replacements": []
+    },
+    {
+      "AgreementId": 1,
+      "PlannedGuardId": 5,
+      "StartTime": "2026-11-12T08:00:00",
+      "Replacements": []
+    },
+    {
+      "AgreementId": 1,
+      "PlannedGuardId": 6,
+      "StartTime": "2026-11-12T08:00:00",
+      "Replacements": []
+    },
+    {
+      "AgreementId": 1,
       "PlannedGuardId": 1,
+      "StartTime": "2026-11-13T08:00:00",
+      "Replacements": []
+    },
+    {
+      "AgreementId": 1,
+      "PlannedGuardId": 2,
+      "StartTime": "2026-11-13T08:00:00",
+      "Replacements": []
+    },
+    {
+      "AgreementId": 1,
+      "PlannedGuardId": 3,
+      "StartTime": "2026-11-14T08:00:00",
+      "Replacements": []
+    },
+    {
+      "AgreementId": 1,
+      "PlannedGuardId": 4,
+      "StartTime": "2026-11-14T08:00:00",
+      "Replacements": []
+    },
+    {
+      "AgreementId": 2,
+      "PlannedGuardId": 7,
+      "StartTime": "2026-11-01T08:00:00",
+      "Replacements": []
+    },
+    {
+      "AgreementId": 2,
+      "PlannedGuardId": 8,
+      "StartTime": "2026-11-02T08:00:00",
+      "Replacements": []
+    },
+    {
+      "AgreementId": 2,
+      "PlannedGuardId": 9,
+      "StartTime": "2026-11-03T08:00:00",
+      "Replacements": []
+    },
+    {
+      "AgreementId": 2,
+      "PlannedGuardId": 7,
+      "StartTime": "2026-11-04T08:00:00",
+      "Replacements": []
+    },
+    {
+      "AgreementId": 2,
+      "PlannedGuardId": 8,
+      "StartTime": "2026-11-05T08:00:00",
+      "Replacements": []
+    },
+    {
+      "AgreementId": 2,
+      "PlannedGuardId": 9,
+      "StartTime": "2026-11-06T08:00:00",
+      "Replacements": []
+    },
+    {
+      "AgreementId": 2,
+      "PlannedGuardId": 7,
+      "StartTime": "2026-11-07T08:00:00",
+      "Replacements": []
+    },
+    {
+      "AgreementId": 2,
+      "PlannedGuardId": 8,
+      "StartTime": "2026-11-08T08:00:00",
+      "Replacements": []
+    },
+    {
+      "AgreementId": 2,
+      "PlannedGuardId": 9,
+      "StartTime": "2026-11-09T08:00:00",
+      "Replacements": []
+    },
+    {
+      "AgreementId": 2,
+      "PlannedGuardId": 7,
+      "StartTime": "2026-11-10T08:00:00",
+      "Replacements": []
+    },
+    {
+      "AgreementId": 2,
+      "PlannedGuardId": 8,
+      "StartTime": "2026-11-11T08:00:00",
+      "Replacements": []
+    },
+    {
+      "AgreementId": 2,
+      "PlannedGuardId": 9,
+      "StartTime": "2026-11-12T08:00:00",
+      "Replacements": []
+    },
+    {
+      "AgreementId": 2,
+      "PlannedGuardId": 7,
+      "StartTime": "2026-11-13T08:00:00",
+      "Replacements": []
+    },
+    {
+      "AgreementId": 2,
+      "PlannedGuardId": 8,
+      "StartTime": "2026-11-14T08:00:00",
+      "Replacements": []
+    },
+    {
+      "AgreementId": 3,
+      "PlannedGuardId": 10,
+      "StartTime": "2026-12-01T08:00:00",
+      "Replacements": []
+    },
+    {
+      "AgreementId": 3,
+      "PlannedGuardId": 11,
+      "StartTime": "2026-12-02T08:00:00",
+      "Replacements": []
+    },
+    {
+      "AgreementId": 3,
+      "PlannedGuardId": 12,
+      "StartTime": "2026-12-03T08:00:00",
+      "Replacements": []
+    },
+    {
+      "AgreementId": 3,
+      "PlannedGuardId": 10,
       "StartTime": "2026-12-04T08:00:00",
       "Replacements": []
     },
     {
-      "AgreementId": 2,
-      "PlannedGuardId": 2,
+      "AgreementId": 3,
+      "PlannedGuardId": 11,
       "StartTime": "2026-12-05T08:00:00",
       "Replacements": []
     },
     {
-      "AgreementId": 2,
-      "PlannedGuardId": 3,
+      "AgreementId": 3,
+      "PlannedGuardId": 12,
       "StartTime": "2026-12-06T08:00:00",
       "Replacements": []
     },
     {
-      "AgreementId": 2,
-      "PlannedGuardId": 1,
+      "AgreementId": 3,
+      "PlannedGuardId": 10,
       "StartTime": "2026-12-07T08:00:00",
-      "Replacements": []
-    },
-    {
-      "AgreementId": 2,
-      "PlannedGuardId": 2,
-      "StartTime": "2026-12-08T08:00:00",
-      "Replacements": []
-    },
-    {
-      "AgreementId": 2,
-      "PlannedGuardId": 3,
-      "StartTime": "2026-12-09T08:00:00",
-      "Replacements": []
-    },
-    {
-      "AgreementId": 2,
-      "PlannedGuardId": 1,
-      "StartTime": "2026-12-10T08:00:00",
-      "Replacements": []
-    },
-    {
-      "AgreementId": 2,
-      "PlannedGuardId": 2,
-      "StartTime": "2026-12-11T08:00:00",
-      "Replacements": []
-    },
-    {
-      "AgreementId": 2,
-      "PlannedGuardId": 3,
-      "StartTime": "2026-12-12T08:00:00",
-      "Replacements": []
-    },
-    {
-      "AgreementId": 2,
-      "PlannedGuardId": 1,
-      "StartTime": "2026-12-13T08:00:00",
-      "Replacements": []
-    },
-    {
-      "AgreementId": 2,
-      "PlannedGuardId": 2,
-      "StartTime": "2026-12-14T08:00:00",
-      "Replacements": []
-    },
-    {
-      "AgreementId": 2,
-      "PlannedGuardId": 3,
-      "StartTime": "2026-12-15T08:00:00",
-      "Replacements": []
-    },
-    {
-      "AgreementId": 2,
-      "PlannedGuardId": 1,
-      "StartTime": "2026-12-16T08:00:00",
-      "Replacements": []
-    },
-    {
-      "AgreementId": 2,
-      "PlannedGuardId": 2,
-      "StartTime": "2026-12-17T08:00:00",
-      "Replacements": []
-    },
-    {
-      "AgreementId": 2,
-      "PlannedGuardId": 3,
-      "StartTime": "2026-12-18T08:00:00",
-      "Replacements": []
-    },
-    {
-      "AgreementId": 2,
-      "PlannedGuardId": 1,
-      "StartTime": "2026-12-19T08:00:00",
-      "Replacements": []
-    },
-    {
-      "AgreementId": 2,
-      "PlannedGuardId": 2,
-      "StartTime": "2026-12-20T08:00:00",
-      "Replacements": []
-    },
-    {
-      "AgreementId": 2,
-      "PlannedGuardId": 3,
-      "StartTime": "2026-12-21T08:00:00",
-      "Replacements": []
-    },
-    {
-      "AgreementId": 2,
-      "PlannedGuardId": 1,
-      "StartTime": "2026-12-22T08:00:00",
-      "Replacements": []
-    },
-    {
-      "AgreementId": 2,
-      "PlannedGuardId": 2,
-      "StartTime": "2026-12-23T08:00:00",
-      "Replacements": []
-    },
-    {
-      "AgreementId": 2,
-      "PlannedGuardId": 3,
-      "StartTime": "2026-12-24T08:00:00",
-      "Replacements": []
-    },
-    {
-      "AgreementId": 2,
-      "PlannedGuardId": 1,
-      "StartTime": "2026-12-25T08:00:00",
-      "Replacements": []
-    },
-    {
-      "AgreementId": 2,
-      "PlannedGuardId": 2,
-      "StartTime": "2026-12-26T08:00:00",
-      "Replacements": []
-    },
-    {
-      "AgreementId": 2,
-      "PlannedGuardId": 3,
-      "StartTime": "2026-12-27T08:00:00",
-      "Replacements": []
-    },
-    {
-      "AgreementId": 2,
-      "PlannedGuardId": 1,
-      "StartTime": "2026-12-28T08:00:00",
-      "Replacements": []
-    },
-    {
-      "AgreementId": 2,
-      "PlannedGuardId": 2,
-      "StartTime": "2026-12-29T08:00:00",
-      "Replacements": []
-    },
-    {
-      "AgreementId": 2,
-      "PlannedGuardId": 3,
-      "StartTime": "2026-12-30T08:00:00",
       "Replacements": []
     }
   ],
-  "Weapons": [],
-  "SpecialEquipmentItems": []
+  "Weapons": [
+    {
+      "Brand": "Учебный образец А",
+      "RegistrationNumber": "ДЕМО-ОР-001",
+      "AssignedEmployeeId": 1
+    },
+    {
+      "Brand": "Учебный образец Б",
+      "RegistrationNumber": "ДЕМО-ОР-002",
+      "AssignedEmployeeId": 2
+    },
+    {
+      "Brand": "Учебный образец А",
+      "RegistrationNumber": "ДЕМО-ОР-003",
+      "AssignedEmployeeId": 3
+    },
+    {
+      "Brand": "Учебный образец Б",
+      "RegistrationNumber": "ДЕМО-ОР-004",
+      "AssignedEmployeeId": null
+    },
+    {
+      "Brand": "Учебный образец А",
+      "RegistrationNumber": "ДЕМО-ОР-005",
+      "AssignedEmployeeId": null
+    }
+  ],
+  "SpecialEquipmentItems": [
+    {
+      "Name": "Учебный комплект спецсредств",
+      "InventoryNumber": "ДЕМО-С-001",
+      "AssignedEmployeeId": 1
+    },
+    {
+      "Name": "Учебный комплект спецсредств",
+      "InventoryNumber": "ДЕМО-С-002",
+      "AssignedEmployeeId": 2
+    },
+    {
+      "Name": "Учебный комплект спецсредств",
+      "InventoryNumber": "ДЕМО-С-003",
+      "AssignedEmployeeId": 3
+    },
+    {
+      "Name": "Учебный комплект спецсредств",
+      "InventoryNumber": "ДЕМО-С-004",
+      "AssignedEmployeeId": 4
+    },
+    {
+      "Name": "Учебный комплект спецсредств",
+      "InventoryNumber": "ДЕМО-С-005",
+      "AssignedEmployeeId": null
+    },
+    {
+      "Name": "Учебный комплект спецсредств",
+      "InventoryNumber": "ДЕМО-С-006",
+      "AssignedEmployeeId": null
+    }
+  ]
 }
