@@ -5,16 +5,20 @@ using System.Linq;
 
 namespace Security_agent
 {
+    // Показывает снаряжение и оформляет его выдачу и возврат.
     public sealed partial class EquipmentWindow : Window
     {
         private AgencyData data;
         private readonly Storage storage;
         private readonly string dataPath;
 
+        // Хранит реквизиты предмета и подпись его владельца для таблицы.
         private sealed record EquipmentRow(bool isWeapon, string Name, string Number, string AssignedTo);
 
+        // Хранит индекс и имя сотрудника для списка выбора.
         private sealed record EmployeeChoice(int Index, string Name);
 
+        // Подключает разметку окна и подготавливает его к работе.
         public EquipmentWindow(AgencyData data, Storage storage, string dataPaht)
         {
             this.data = data;
@@ -25,6 +29,7 @@ namespace Security_agent
             Refresh();
         }
 
+        // Обновляет таблицу снаряжения и список сотрудников.
         private void Refresh()
         {
             var weapons = data.Weapons.Select(weapon => new EquipmentRow(true, $"Оружие - {weapon.Brand}", weapon.RegistrationNumber, EmployeeName(weapon.AssignedTo)));
@@ -36,6 +41,7 @@ namespace Security_agent
                 item => new EmployeeChoice(item.Index, EmployeeName(item.Employee))).OrderBy(item => item.Name).ToList();
         }
 
+        // Проверяет реквизиты и добавляет новый предмет.
         private void AddItem(object sender, RoutedEventArgs e)
         {
             bool saved = SaveChange(working =>
@@ -77,6 +83,7 @@ namespace Security_agent
             }
         }
 
+        // Закрепляет выбранный предмет за сотрудником.
         private void IssueItem(object sender, RoutedEventArgs e)
         {
             SaveChange(working =>
@@ -98,6 +105,7 @@ namespace Security_agent
             });
         }
 
+        // Оформляет возврат выбранного предмета.
         private void ReturnItem(object sender, RoutedEventArgs e)
         {
             SaveChange(working =>
@@ -112,6 +120,7 @@ namespace Security_agent
             });
         }
 
+        // Находит выбранный предмет в рабочей копии по его номеру.
         private SecurityItem ReadSelectedItem(AgencyData working)
         {
             if (itemsGrid.SelectedItem is not EquipmentRow row)
@@ -123,6 +132,7 @@ namespace Security_agent
             return item ?? throw new InvalidOperationException("Предмет не найден в сохраненных данных.");
         }
 
+        // Применяет изменение к рабочей копии и сохраняет результат.
         private bool SaveChange(Action<AgencyData> change)
         {
             try
@@ -142,11 +152,13 @@ namespace Security_agent
             }
         }
 
+        // Формирует имя владельца или подпись свободного предмета.
         private static string EmployeeName(Staff? employee)
         {
             return employee == null ? "Свободен" : $"{employee.LastName} {employee.FirstName} {employee.MiddleName}".Trim();
         }
 
+        // Сравнивает номера без учёта регистра и крайних пробелов.
         private static bool SameNumber(string first, string second)
         {
             return string.Equals(first.Trim(), second.Trim(), StringComparison.OrdinalIgnoreCase);

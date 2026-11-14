@@ -6,6 +6,7 @@ using System.Windows.Controls;
 
 namespace Security_agent
 {
+    // Показывает форму создания и редактирования договора.
     public partial class NewAgreementWindow : Window
     {
         private readonly AgencyData data;
@@ -18,6 +19,7 @@ namespace Security_agent
 
         public Agreement? SavedAgreement { get; private set; }
 
+        // Подключает разметку окна и подготавливает его к работе.
         public NewAgreementWindow(AgencyData data, Storage storage, string dataPath, Agreement? editingAgreement = null)
         {
             this.data = data;
@@ -43,8 +45,10 @@ namespace Security_agent
 
         }
 
+        // Хранит клиента и подпись для списка выбора.
         private sealed record ClientChoice(Client Client, string Name);
 
+        // Формирует подпись клиента по его типу.
         private static string GetClientName(Client client)
         {
             if (client is ClientLegalEntity legal)
@@ -54,6 +58,7 @@ namespace Security_agent
             return $"{person.LastName} {person.FirstName} {person.MiddleName}".Trim();
         }
 
+        // Заполняет поля формы данными существующего договора.
         private void FillEditForm(Agreement agreement)
         {
             Title = "Редактирование договора";
@@ -84,6 +89,7 @@ namespace Security_agent
             }
         }
 
+        // Проверяет и сохраняет введённые условия договора.
         private void SaveAgreementClick(object sender, RoutedEventArgs e)
         {
             try
@@ -119,6 +125,7 @@ namespace Security_agent
             }
         }
 
+        // Создаёт договор нужного вида из полей формы.
         private Agreement ReadForm()
         {
             if (ClientBox.SelectedItem is not ClientChoice choice)
@@ -173,6 +180,7 @@ namespace Security_agent
                 ReadHourlyRate(HourlyRateBox.Text));
         }
 
+        // Преобразует текст в дату и время мероприятия.
         private static DateTime ReadEventTime(string text, string field)
         {
             if (DateTime.TryParseExact(text.Trim(), "dd.MM.yyyy HH:mm", RussianCulture, DateTimeStyles.None, out DateTime value))
@@ -180,6 +188,7 @@ namespace Security_agent
             throw new ArgumentException($"Заполните поле {field} в формате дд.мм.гггг чч:мм");
         }
 
+        // Читает и проверяет положительное дробное число.
         private static decimal ReadPositiveDecimal(string text, string field)
         {
             if (decimal.TryParse(text, NumberStyles.Number, RussianCulture, out decimal value) && value > 0)
@@ -187,12 +196,14 @@ namespace Security_agent
             throw new ArgumentException($"Поле {field} должно содержать число больше нуля.");
         }
 
+        // Читает часовой тариф из поля формы.
         private static decimal ReadHourlyRate(string text)
         {
             if (decimal.TryParse(text, NumberStyles.Number, RussianCulture, out decimal value) && value > 0)
                 return value;
             throw new ArgumentException("Укажите положительный тариф, например 500,00.");
         }
+        // Читает и проверяет положительное целое число.
         private static int ReadPositiveInt(string text, string field)
         {
             if (int.TryParse(text, out int value) && value > 0)
@@ -200,6 +211,7 @@ namespace Security_agent
             throw new ArgumentException($"Поле {field} должно быть целым числом, больше 0");
         }
 
+        // Подставляет площадь на одного охранника по типу объекта.
         private void ObjectTypeChanged(object sender, SelectionChangedEventArgs e)
         {
             if (AreaPerGuardBox == null ||
@@ -219,6 +231,7 @@ namespace Security_agent
                 AreaPerGuardBox.Text = suggestedArea;
         }
 
+        // Показывает поля выбранной услуги и проверяет доступность охраны объекта.
         private void AgreementFormChanged(object sender, SelectionChangedEventArgs e)
         {
             bool canOrderObject = ClientBox.SelectedItem is ClientChoice choice && choice.Client is ClientLegalEntity;

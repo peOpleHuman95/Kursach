@@ -6,13 +6,16 @@ using System.Windows.Input;
 
 namespace Security_agent
 {
+    // Показывает список сотрудников и открывает остальные разделы программы.
     public partial class MainWindow : Window
     {
         private readonly Storage storage = new();
         private AgencyData? data;
+        // Хранит значение фильтра должности и его подпись.
         private sealed record PositionFilterChoice(string? Name, string Label);
         private readonly string dataPath = GetDataPath();
 
+        // Находит путь к файлу данных проекта.
         private static string GetDataPath()
         {
             DirectoryInfo? directory = new(AppContext.BaseDirectory);
@@ -25,10 +28,14 @@ namespace Security_agent
             return Path.Combine(AppContext.BaseDirectory, "Data", "data.json");
         }
 
+        // Подключает разметку окна и подготавливает его к работе.
         public MainWindow() { InitializeComponent(); }
+        // Загружает сотрудников при открытии главного окна.
         private void Window_Loaded(object sender, RoutedEventArgs e) => LoadEmployees();
+        // Перечитывает данные сотрудников по кнопке «Обновить».
         private void ReloadClick(object sender, RoutedEventArgs e) => LoadEmployees();
 
+        // Загружает данные, обновляет счётчики и список сотрудников.
         private void LoadEmployees()
         {
             try
@@ -55,6 +62,7 @@ namespace Security_agent
             }
         }
 
+        // Обновляет список должностей для фильтра.
         private void RefreshPositionFilter(AgencyData current)
         {
             string? selected = (PositionFilter.SelectedItem as PositionFilterChoice)?.Name;
@@ -72,6 +80,7 @@ namespace Security_agent
                 string.Equals(choice.Name, selected, StringComparison.OrdinalIgnoreCase)) ?? choices[0];
         }
 
+        // Применяет поиск и фильтры к списку сотрудников.
         private void RefreshList()
         {
             // События фильтров могут сработать ещё во время InitializeComponent.
@@ -92,9 +101,13 @@ namespace Security_agent
             StatusText.Text = $"Показано: {employees.Count} из {data.Employees.Count}";
             UpdateActions();
         }
+        // Обновляет список при изменении текста поиска.
         private void FilterChanged(object sender, TextChangedEventArgs e) => RefreshList();
+        // Обновляет список при смене фильтра.
         private void StatusChanged(object sender, SelectionChangedEventArgs e) => RefreshList();
+        // Обновляет доступность действий при выборе сотрудника.
         private void EmployeeSelected(object sender, SelectionChangedEventArgs e) => UpdateActions();
+        // Включает кнопки в зависимости от выбранной записи.
         private void UpdateActions()
         {
             if (EditButton == null || DismissButton == null) return;
@@ -102,12 +115,14 @@ namespace Security_agent
             EditButton.IsEnabled = employee != null;
             DismissButton.IsEnabled = employee != null && !employee.IsDismissed;
         }
+        // Открывает карточку сотрудника двойным щелчком по строке.
         private void EmployeeDoubleClick(object sender, MouseButtonEventArgs e)
         {
             // Двойной щелчок по заголовку не открывает старую выбранную запись.
             if (ItemsControl.ContainerFromElement(EmployeesGrid, e.OriginalSource as DependencyObject) is DataGridRow)
                 EditClick(sender, e);
         }
+        // Открывает форму добавления сотрудника.
         private void AddEmployeeClick(object sender, RoutedEventArgs e)
         {
             if (data == null) return;
@@ -115,6 +130,7 @@ namespace Security_agent
             window.ShowDialog();
             LoadEmployees();
         }
+        // Открывает карточку выбранного сотрудника.
         private void EditClick(object sender, RoutedEventArgs e)
         {
             if (data == null || EmployeesGrid.SelectedItem is not Staff selected) return;
@@ -129,6 +145,7 @@ namespace Security_agent
             }
             catch (Exception error) { ShowError(error); }
         }
+        // Запрашивает подтверждение увольнения и сохраняет запись.
         private void DismissClick(object sender, RoutedEventArgs e)
         {
             if (data == null || EmployeesGrid.SelectedItem is not Staff selected) return;
@@ -149,8 +166,10 @@ namespace Security_agent
             }
             catch (Exception error) { ShowError(error); }
         }
+        // Показывает сообщение об ошибке.
         private void ShowError(Exception error) => MessageBox.Show(this, error.Message, "Не удалось выполнить действие", MessageBoxButton.OK, MessageBoxImage.Warning);
 
+        // Открывает раздел клиентов.
         private void OpenClientsClick(object sender, RoutedEventArgs e)
         {
             try
@@ -167,6 +186,7 @@ namespace Security_agent
                 ShowError(error);
             }
         }
+        // Открывает раздел договоров.
         private void OpenAgreementsClick(object sender, RoutedEventArgs e)
         {
             try
@@ -184,6 +204,7 @@ namespace Security_agent
             }
         }
 
+        // Открывает график дежурств.
         private void OpenDutyClick(object sender, RoutedEventArgs e)
         {
             try
@@ -201,6 +222,7 @@ namespace Security_agent
             }
         }
 
+        // Открывает учёт снаряжения.
         private void OpenEquipmentClick(object sender, RoutedEventArgs e)
         {
             try
@@ -216,6 +238,7 @@ namespace Security_agent
             }
         }
 
+        // Открывает финансовый отчёт.
         private void OpenReportsClick(object sender, RoutedEventArgs e)
         {
             try

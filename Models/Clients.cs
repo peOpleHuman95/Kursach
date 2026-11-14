@@ -8,6 +8,7 @@ namespace Security_agent
     public abstract class Client
     {
         public string Address {get; private set;} = "";
+        // Проверяет и сохраняет адрес при создании клиента.
         protected Client (string address)
         {
             ChangeAddress(address);
@@ -29,6 +30,7 @@ namespace Security_agent
 
         public string NameFirm {get; private set;} = "";
         
+        // Создаёт карточку организации с названием и адресом.
         public ClientLegalEntity(string nameFirm,string address) :base(address)
         {
            ChangeNameFirm(nameFirm);
@@ -52,6 +54,7 @@ namespace Security_agent
         public string MiddleName {get; private set;} = "";
         public string Passport {get; private set;} = "";
 
+        // Создаёт карточку физического лица с адресом, ФИО и паспортными данными.
         public ClientIndividual(
             string firstName,
             string lastName,

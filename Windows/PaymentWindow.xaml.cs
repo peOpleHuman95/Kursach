@@ -4,6 +4,7 @@ using System.Windows;
 
 namespace Security_agent
 {
+    // Показывает форму ввода платежа и остаток по договору.
     public partial class PaymentWindow : Window
     {
         private static readonly CultureInfo RussianCulture = CultureInfo.GetCultureInfo("ru-RU");
@@ -11,6 +12,7 @@ namespace Security_agent
         private readonly decimal remaining;
         public Payment? EnteredPayment {get; private set;}
 
+        // Подключает разметку окна и подготавливает его к работе.
         public PaymentWindow(Agreement agreement, decimal remaining)
         {
             this.remaining = remaining;
@@ -23,6 +25,7 @@ namespace Security_agent
             AmountBox.IsReadOnly = agreement is EventAgreement;
         }
 
+        // Проверяет введённые реквизиты и передаёт платёж в окно договоров.
         private void SavePaymentClick(object sender, RoutedEventArgs e)
         {
             try

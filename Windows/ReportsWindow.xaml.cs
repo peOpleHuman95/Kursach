@@ -8,13 +8,16 @@ using System.Linq;
 
 namespace Security_agent
 {
+    // Показывает финансовый отчёт по платежам за период.
     public partial class ReportsWindow : Window
     {
         private readonly AgencyData data;
         private static readonly CultureInfo RussianCulture = CultureInfo.GetCultureInfo("ru-RU");
 
+        // Хранит реквизиты платежа для строки отчёта.
         private sealed record PaymentRow(DateTime Date, string AgreementNumber, string ClientName, string DocumentNumber, decimal Amount);
 
+        // Подключает разметку окна и подготавливает его к работе.
         public ReportsWindow(AgencyData data)
         {
             this.data = data;
@@ -28,11 +31,13 @@ namespace Security_agent
             GenerateReport();
         }
 
+        // Перестраивает отчёт по выбранным датам.
         private void GenerateClick(object sender, RoutedEventArgs e)
         {
             GenerateReport();
         }
 
+        // Проверяет период, отбирает платежи и суммирует поступления.
         private void GenerateReport()
         {
             PrintReportButton.IsEnabled = false;
@@ -63,6 +68,7 @@ namespace Security_agent
                 $"Платежей: {rows.Count}  ·  Итого: {total.ToString("N2", RussianCulture)} ₽";
         }
 
+        // Открывает диалог печати и передаёт ему сформированный отчёт.
         private void PrintReportClick(object sender, RoutedEventArgs e)
         {
             if (PaymentsGrid.ItemsSource == null)
@@ -140,6 +146,7 @@ namespace Security_agent
             }
         }
 
+        // Создаёт строку таблицы печатного отчёта.
         private static TableRow CreatePrintRow(params string[] values)
         {
             var row = new TableRow();
@@ -160,6 +167,7 @@ namespace Security_agent
             return row;
         }
 
+        // Возвращает ФИО клиента или название организации.
         private static string GetClientName(Client client)
         {
             return client switch

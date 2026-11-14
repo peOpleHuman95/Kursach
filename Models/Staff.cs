@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace Security_agent
 {
+    // Хранит название должности, оклад и признак охранника.
     public class Position
     {  
         // Название должности
@@ -11,6 +12,7 @@ namespace Security_agent
         public decimal BaseSalary {get; private set;}
         // Является ли должность охранной
         public bool IsGuard {get; private set;}
+        // Хранит название должности, оклад и признак охранника.
         public Position(string name, decimal baseSalary, bool isGuard)
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -24,6 +26,7 @@ namespace Security_agent
 
         }
     }
+    // Хранит карточку сотрудника и контролирует выдачу снаряжения и увольнение.
     public class Staff
     {
         // Личные данные
@@ -182,6 +185,7 @@ namespace Security_agent
         }
     }
 
+    // Хранит сведения о документах сотрудника.
     public class EmployeeDocuments
     {
         public string Passport {get; private set;} = "";

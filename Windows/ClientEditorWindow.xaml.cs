@@ -4,6 +4,7 @@ using System.Windows.Controls;
 
 namespace Security_agent
 {
+    // Открывает форму создания или редактирования карточки клиента.
     public partial class ClientEditorWindow : Window
     {
         private readonly AgencyData data;
@@ -13,6 +14,7 @@ namespace Security_agent
 
         public Client? SavedClient { get; private set; }
 
+        // Подключает разметку окна и подготавливает его к работе.
         public ClientEditorWindow(AgencyData data, Storage storage, string dataPath, Client? client)
         {
             this.data = data;
@@ -42,6 +44,7 @@ namespace Security_agent
             }
         }
 
+        // Показывает поля, соответствующие выбранному типу клиента.
         private void ClientTypeChanged(object sender, SelectionChangedEventArgs e)
         {
             bool isLegal = ClientTypeBox.SelectedIndex == 1;
@@ -49,6 +52,7 @@ namespace Security_agent
             IndividualFields.Visibility = isLegal ? Visibility.Collapsed : Visibility.Visible;
         }
 
+        // Создаёт клиента из введённых реквизитов.
         private Client ReadForm()
         {
             if (ClientTypeBox.SelectedIndex == 1)
@@ -57,6 +61,7 @@ namespace Security_agent
             return new ClientIndividual(FirstNameBox.Text, LastNameBox.Text, MiddleNameBox.Text, AddressBox.Text, PassportBox.Text);
         }
 
+        // Сохраняет карточку и отменяет изменение данных при ошибке записи.
         private void SaveClientClick(object sender, RoutedEventArgs e)
         {
             try
@@ -106,6 +111,7 @@ namespace Security_agent
             }
         }
 
+        // Создаёт копию карточки для восстановления при ошибке сохранения.
         private static Client CopyClient(Client client)
         {
             if (client is ClientLegalEntity legal)
@@ -115,6 +121,7 @@ namespace Security_agent
             return new ClientIndividual(person.FirstName, person.LastName, person.MiddleName, person.Address, person.Passport);
         }
 
+        // Переносит реквизиты в существующую карточку того же типа.
         private static void ApplyChanges(Client target, Client source)
         {
             if (target is ClientLegalEntity legal && source is ClientLegalEntity newLegal)

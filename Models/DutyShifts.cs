@@ -8,6 +8,7 @@ namespace Security_agent
         public Staff NewGuard {get;}
         public string Reason {get;}
 
+        // Записывает прежнего и нового охранника и причину замены.
         internal ShiftReplacement(
             Staff previousGuard,
             Staff newGuard,
@@ -41,6 +42,7 @@ namespace Security_agent
             : this(agreement, guard, startTime, false)
         {
         }
+        // Создаёт суточное дежурство на объекте с указанным охранником.
         private DutyShift(
             ObjectAgreement agreement,
             Staff guard,
@@ -62,6 +64,7 @@ namespace Security_agent
             ActualGuard = guard;
         }
 
+        // Проверяет новый период дежурства и меняет время начала.
         internal void ApplyReschedule(DateTime startTime)
         {
             CheckPeriod(Agreement, startTime);
@@ -69,6 +72,7 @@ namespace Security_agent
             StartTime = startTime;
         }
 
+        // Проверяет, что суточная смена полностью входит в срок договора.
         private static void CheckPeriod(ObjectAgreement agreement, DateTime startTime)
         {
             DateTime lastDutyDate = startTime.AddDays(1).AddTicks(-1).Date;
@@ -148,6 +152,7 @@ namespace Security_agent
             shifts.Add(shift);
         }
 
+        // Переносит смену с проверкой отдыха фактически назначенного охранника.
         public void RescheduleShift(DutyShift shift, DateTime startTime)
         {
             ArgumentNullException.ThrowIfNull(shift);
@@ -180,6 +185,7 @@ namespace Security_agent
             shift.ApplyReplaceGuard(newGuard, reason);
         }
 
+        // Продлевает график до указанной даты и проверяет состав каждой новой смены.
         public IReadOnlyList<DutyShift> FillThrough(
             ObjectAgreement agreement, DateTime firstStart, DateTime throughDate)
         {
@@ -232,6 +238,7 @@ namespace Security_agent
             return pending.AsReadOnly();
         }
 
+        // Проверяет, подходит ли сотрудник для замены на выбранной смене.
         public bool CanReplaceGuard(DutyShift shift, Staff guard)
         {
             return shifts.Contains(shift)
@@ -241,12 +248,14 @@ namespace Security_agent
                 && HasRequiredRest(guard, shift.StartTime, shift.EndTime, shift);
         }
 
+        // Отклоняет назначение при пересечении смен или недостаточном отдыхе.
         private void CheckRest(Staff guard, DateTime startTime, DateTime endTime, DutyShift? excludedShift)
         {
             if (!HasRequiredRest(guard, startTime, endTime, excludedShift))
                 throw new InvalidOperationException("Дежурства пересекаются или между ними меньше двух дней отдыха.");
         }
 
+        // Проверяет перерыв между новой и другими сменами охранника.
         private bool HasRequiredRest(
             Staff guard, DateTime startTime, DateTime endTime, DutyShift? excludedShift,
             IEnumerable<DutyShift>? schedule = null)

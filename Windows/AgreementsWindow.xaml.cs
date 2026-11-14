@@ -6,6 +6,7 @@ using System.Windows.Controls;
 
 namespace Security_agent
 {
+    // Показывает договоры и позволяет управлять назначениями и оплатой.
     public partial class AgreementsWindow : Window
     {
         private AgencyData data;
@@ -14,10 +15,13 @@ namespace Security_agent
 
         private static readonly CultureInfo RussianCulture = CultureInfo.GetCultureInfo("ru-RU");
 
+        // Хранит договор и значения для строки таблицы.
         private sealed record AgreementBox(Agreement Agreement ,string Number, string ClientName, string Service, DateTime EndDate, string Staffing);
 
+        // Хранит индекс сотрудника и его имя для списка выбора.
         private sealed record GuardChoice(int EmployeeIndex, string Name);
 
+        // Подключает разметку окна и подготавливает его к работе.
         public AgreementsWindow(AgencyData data, Storage storage, string dataPath)
         {
             this.data = data;
@@ -28,6 +32,7 @@ namespace Security_agent
             RefreshAgreements();
         }
 
+        // Возвращает ФИО клиента или название организации.
         private static string GetClientName(Client client)
         {
             if (client is ClientLegalEntity legal)
@@ -37,6 +42,7 @@ namespace Security_agent
             return $"{person.LastName} {person.FirstName} {person.MiddleName}".Trim();
         }
 
+        // Перестраивает таблицу договоров с учётом фильтра.
         private void RefreshAgreements(Agreement? selected = null)
         {
             DateTime today = DateTime.Today;
@@ -65,6 +71,7 @@ namespace Security_agent
             RefreshStaff();
         }
 
+        // Применяет новый фильтр договоров.
         private void AgreementStatusChanged(object sender, SelectionChangedEventArgs e)
         {
             // Начальный выбор может сработать до создания таблицы.
@@ -75,6 +82,7 @@ namespace Security_agent
             RefreshAgreements(selected);
         }
 
+        // Открывает форму нового договора.
         private void NewAgreementClick(object sender, RoutedEventArgs e)
         {
             if (data.Clients.Count == 0)
@@ -88,16 +96,19 @@ namespace Security_agent
                 RefreshAgreements(window.SavedAgreement);
         }
 
+        // Обновляет карточку и назначения при выборе договора.
         private void AgreementSelected(object sender, SelectionChangedEventArgs e)
         {
             RefreshStaff();
         }
 
+        // Готовит запись об охраннике для выпадающего списка.
         private GuardChoice CreateGuardChoice(Staff employee)
         {
             string name = $"{employee.LastName} {employee.FirstName} {employee.MiddleName}".Trim();
             return new GuardChoice(data.Employees.IndexOf(employee), name);
         }
+        // Обновляет карточку договора и списки охранников.
         private void RefreshStaff()
         {
             if (AgreementsGrid.SelectedItem is not AgreementBox row)
@@ -147,6 +158,7 @@ namespace Security_agent
             }
         }
 
+        // Формирует текст карточки договора.
         private string GetAgreementDetails(Agreement agreement)
         {
             string clientType = agreement.Client is ClientLegalEntity
@@ -206,6 +218,7 @@ namespace Security_agent
                 GetPaymentDetails(agreement);
         }
 
+        // Назначает выбранного охранника на договор.
         private void AssignGuardClick(object sender, RoutedEventArgs e)
         {
             SaveAgreementChange((agreement, working) =>
@@ -215,6 +228,7 @@ namespace Security_agent
             });
         }
 
+        // Снимает выбранного охранника с договора.
         private void RemoveGuardClick(object sender, RoutedEventArgs e)
         {
             SaveAgreementChange((agreement, working) =>
@@ -224,6 +238,7 @@ namespace Security_agent
             });
         }
 
+        // Заменяет охранника в составе договора.
         private void ReplaceGuardClick(object sender, RoutedEventArgs e)
         {
             SaveAgreementChange((agreement, working) =>
@@ -234,6 +249,7 @@ namespace Security_agent
             });
         }
 
+        // Находит выбранного охранника в рабочей копии данных.
         private static Staff ReadGuard(ComboBox box, AgencyData working)
         {
             if (box.SelectedItem is not GuardChoice choice)
@@ -242,6 +258,7 @@ namespace Security_agent
             return working.Employees[choice.EmployeeIndex];
         }
 
+        // Открывает выбранный договор для редактирования.
         private void EditAgreementClick(object sender, RoutedEventArgs e)
         {
             if (AgreementsGrid.SelectedItem is not AgreementBox row)
@@ -276,6 +293,7 @@ namespace Security_agent
             }
         }
 
+        // Применяет изменение к рабочей копии и сохраняет её.
         private void SaveAgreementChange(Action<Agreement, AgencyData> change)
         {
             if (AgreementsGrid.SelectedItem is not AgreementBox row)
@@ -307,6 +325,7 @@ namespace Security_agent
             }
         }
 
+        // Открывает счёт по выбранному договору.
         private void OpenInvoiceClick(object sender, RoutedEventArgs e)
         {
             if (AgreementsGrid.SelectedItem is not AgreementBox row || !row.Agreement.CanCalculateCost)
@@ -319,6 +338,7 @@ namespace Security_agent
             window.ShowDialog();
         }
 
+        // Открывает ввод платежа и сохраняет его после подтверждения.
         private void AddPaymentClick(object sender, RoutedEventArgs e)
         {
             if (AgreementsGrid.SelectedItem is not AgreementBox row)
@@ -351,8 +371,10 @@ namespace Security_agent
                 MessageBox.Show(this, error.Message, "Не удалось открыть оплату", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
+        // Формирует сведения о начислениях, остатке и платежах.
         private string GetPaymentDetails(Agreement agreement)
         {
+            // Форматирует денежную сумму для карточки договора.
             string Money(decimal amount) => amount.ToString("C2", RussianCulture);
 
             string text = $"Оплачено: {Money(agreement.PaidAmount)}";

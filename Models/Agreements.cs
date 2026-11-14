@@ -10,6 +10,7 @@ namespace Security_agent
         public decimal Sum {get;}
         public DateTime DatePayment {get;}
         public string NumberDocument {get;}
+        // Проверяет сумму и номер документа и сохраняет данные платежа.
         public Payment (decimal sum, DateTime datePayment, string numberDocument)
         {
             if (sum <= 0) throw new ArgumentException("Сумма платежа должна быть положительной.", nameof(sum));
@@ -34,6 +35,7 @@ namespace Security_agent
         //Сумма всех внесенных платежей по договору
         public decimal PaidAmount => payments.Sum(payment => payment.Sum);
 
+        // Проверяет клиента, номер и даты при создании договора.
         protected Agreement(
             Client client,
             string numberAgreement,
@@ -107,6 +109,7 @@ namespace Security_agent
 
         public bool CanEdit => payments.Count == 0;
 
+        // Проверяет допустимость правок и обновляет условия договора.
         internal void ApplyEdit(Agreement edited, DutySchedule schedule)
         {
             if (!CanEdit)
@@ -132,6 +135,7 @@ namespace Security_agent
             DateEndContract = edited.DateEndContract;
         }
 
+        // Копирует параметры услуги из изменённого договора того же вида.
         protected abstract void CopyServiceTermsFrom(Agreement edited);
 
 
@@ -160,6 +164,7 @@ namespace Security_agent
                 throw new InvalidOperationException("Сотрудник не назначен на этот договор.");
         
         }
+        // Меняет назначенного охранника с проверкой состава договора.
         public void ReplaceEmployee(Staff previousEmployee, Staff newEmployee)
         {
             if (previousEmployee == null)
@@ -218,6 +223,7 @@ namespace Security_agent
         public decimal HourlyRate { get; private set; }
         // Деление с округление вверх
         public override int RequiredStaffCount => 1 + (ParticipantsCount - 1) / ParticipantsPerGuard;
+        // Проверяет параметры мероприятия и сохраняет условия почасовой охраны.
         public EventAgreement(
             Client client,
             string numberAgreement,
@@ -254,6 +260,7 @@ namespace Security_agent
             ParticipantsPerGuard = participantsPerGuard;
             HourlyRate = hourlyRate;
         }
+        // Копирует параметры услуги из изменённого договора того же вида.
         protected override void CopyServiceTermsFrom(Agreement edited)
         {
             var terms = (EventAgreement)edited;
@@ -283,6 +290,7 @@ namespace Security_agent
         DateTime DueDate,
         decimal Amount);
 
+    // Описывает помесячную охрану объекта юридического лица.
     public class ObjectAgreement : Agreement
     {
         public string ObjectAddress { get; private set; }
@@ -309,6 +317,7 @@ namespace Security_agent
         public override bool CanCalculateCost => true;
 
 
+        // Проверяет параметры объекта и сохраняет условия помесячной охраны.
         public ObjectAgreement(
             ClientLegalEntity client,
             string numberAgreement,
@@ -341,6 +350,7 @@ namespace Security_agent
             MonthlyRate = monthlyRate;
         }
 
+        // Копирует параметры услуги из изменённого договора того же вида.
         protected override void CopyServiceTermsFrom(Agreement edited)
         {
             var terms = (ObjectAgreement)edited;
@@ -351,11 +361,13 @@ namespace Security_agent
             MonthlyRate = terms.MonthlyRate;
         }
 
+        // Вычисляет стоимость охраны по правилам этого вида договора.
         public override decimal CalculateCost()
         {
             return GetBillingPeriods().Sum(period => period.Amount);
         }
 
+        // Рассчитывает начисление и срок оплаты для каждого месяца договора.
         public IEnumerable<BillingPeriod> GetBillingPeriods()
         {
 

@@ -5,6 +5,7 @@ using System.Windows.Controls;
 
 namespace Security_agent
 {
+    // Показывает форму создания, редактирования или просмотра сотрудника.
     public partial class EmployeeWindow : Window
     {
         private readonly AgencyData data;
@@ -14,6 +15,7 @@ namespace Security_agent
 
         public Staff? CreatedEmployee {get; private set;}
 
+        // Подключает разметку окна и подготавливает его к работе.
         public EmployeeWindow(AgencyData data, Storage storage, string path, Staff? employee = null)
         {
             this.data = data ?? throw new ArgumentNullException(nameof(data));
@@ -186,6 +188,7 @@ namespace Security_agent
             storage.Save(path, data);
         }
 
+        // Добавляет нового сотрудника и при необходимости новую должность.
         private void PersistEmployee(Staff employee)
         {
             bool newPosition = !data.Positions.Contains(employee.Position);
@@ -209,6 +212,7 @@ namespace Security_agent
                 throw;
             }
         }
+        // Проверяет форму, сохраняет карточку и закрывает окно при успехе.
         private void SaveClick(object sender, RoutedEventArgs e)
         {
             try

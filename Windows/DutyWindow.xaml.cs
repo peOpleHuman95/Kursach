@@ -7,6 +7,7 @@ using System.Windows.Documents;
 
 namespace Security_agent
 {
+    // Показывает график охраны объектов и позволяет управлять сменами.
     public partial class DutyWindow : Window
     {
         private AgencyData data;
@@ -16,9 +17,13 @@ namespace Security_agent
         private DateTime? filterTo;
         private int? filterGuardIndex;
 
+        // Хранит договор объекта и подпись для списка выбора.
         private sealed record ObjectChoice(ObjectAgreement Agreement, string Name);
+        // Хранит сотрудника и его имя для списка выбора.
         private sealed record GuardChoice(Staff Employee, string Name);
+        // Хранит значение и подпись фильтра по охраннику.
         private sealed record GuardFilterChoice(int? EmployeeIndex, string Name);
+        // Хранит смену и значения для строки таблицы.
         private sealed record ShiftRow(
             DutyShift Shift,
             string Start,
@@ -26,6 +31,7 @@ namespace Security_agent
             string PlannedGuard,
             string ActualGuard);
 
+        // Подключает разметку окна и подготавливает его к работе.
         public DutyWindow(AgencyData data, Storage storage, string dataPath)
         {
             this.data = data;
@@ -36,11 +42,13 @@ namespace Security_agent
             RefreshObjects();
         }
 
+        // Формирует полное имя охранника.
         private static string GetGuardName(Staff employee)
         {
             return $"{employee.LastName} {employee.FirstName} {employee.MiddleName}".Trim();
         }
 
+        // Обновляет список договоров охраны объектов.
         private void RefreshObjects(ObjectAgreement? selected = null)
         {
             var objects = data.Agreements
@@ -58,6 +66,7 @@ namespace Security_agent
             RefreshShifts();
         }
 
+        // Переключает график на выбранный объект.
         private void ObjectChanged(object sender, SelectionChangedEventArgs e)
         {
             RefreshShifts();
@@ -67,6 +76,7 @@ namespace Security_agent
                 ShiftDatePicker.SelectedDate = choice.Agreement.DateAgreement.Date;
         }
 
+        // Применяет фильтры и обновляет таблицу смен.
         private void RefreshShifts(DutyShift? selected = null)
         {
             if (ObjectBox.SelectedItem is not ObjectChoice choice)
@@ -132,6 +142,7 @@ namespace Security_agent
             RefreshHistory();
         }
 
+        // Проверяет даты и применяет фильтры графика.
         private void ApplyFiltersClick(object sender, RoutedEventArgs e)
         {
             DateTime? from = FilterFromPicker.SelectedDate;
@@ -148,6 +159,7 @@ namespace Security_agent
             RefreshShifts((ShiftsGrid.SelectedItem as ShiftRow)?.Shift);
         }
 
+        // Сбрасывает фильтры графика.
         private void ResetFiltersClick(object sender, RoutedEventArgs e)
         {
             filterFrom = null;
@@ -158,11 +170,13 @@ namespace Security_agent
             RefreshShifts((ShiftsGrid.SelectedItem as ShiftRow)?.Shift);
         }
 
+        // Обновляет историю и список замен для выбранной смены.
         private void ShiftSelected(object sender, SelectionChangedEventArgs e)
         {
             RefreshHistory();
         }
 
+        // Показывает причины замен и доступных охранников.
         private void RefreshHistory()
         {
             if (ShiftsGrid.SelectedItem is not ShiftRow row)
@@ -194,6 +208,7 @@ namespace Security_agent
                     $"Причина: {replacement.Reason}"));
         }
 
+        // Добавляет смену с выбранным охранником и временем начала.
         private void AddShiftClick(object sender, RoutedEventArgs e)
         {
             SaveShiftChange((working, agreement) =>
@@ -204,6 +219,7 @@ namespace Security_agent
             });
         }
 
+        // Заполняет график до выбранной даты.
         private void FillScheduleClick(object sender, RoutedEventArgs e)
         {
             int added = 0;
@@ -225,6 +241,7 @@ namespace Security_agent
             }
         }
 
+        // Переносит выбранное дежурство.
         private void RescheduleShiftClick(object sender, RoutedEventArgs e)
         {
             SaveShiftChange((working, agreement) =>
@@ -235,6 +252,7 @@ namespace Security_agent
             });
         }
 
+        // Оформляет замену с указанием причины.
         private void ReplaceGuardClick(object sender, RoutedEventArgs e)
         {
             SaveShiftChange((working, agreement) =>
@@ -249,6 +267,7 @@ namespace Security_agent
             });
         }
 
+        // Читает дату и время начала смены из полей формы.
         private DateTime ReadShiftStart()
         {
             DateTime date = ShiftDatePicker.SelectedDate
@@ -263,6 +282,7 @@ namespace Security_agent
             return date.Date.Add(time);
         }
 
+        // Находит выбранного охранника в рабочей копии данных.
         private Staff ReadGuard(ComboBox box, AgencyData working)
         {
             if (box.SelectedItem is not GuardChoice selectedGuard)
@@ -272,6 +292,7 @@ namespace Security_agent
             return working.Employees[index];
         }
 
+        // Находит выбранное дежурство в рабочей копии данных.
         private DutyShift ReadSelectedShift(AgencyData working, ObjectAgreement agreement)
         {
             if (ShiftsGrid.SelectedItem is not ShiftRow row)
@@ -286,6 +307,7 @@ namespace Security_agent
             return shift;
         }
 
+        // Сохраняет изменения графика и обновляет окно.
         private bool SaveShiftChange(Func<AgencyData, ObjectAgreement, DutyShift> change)
         {
             try
@@ -317,6 +339,7 @@ namespace Security_agent
             }
         }
 
+        // Создаёт оформленную ячейку печатного графика.
         private static TableCell PrintCell(string text)
         {
             var paragraph = new Paragraph { Margin = new Thickness(0), TextAlignment = TextAlignment.Left };
@@ -335,6 +358,7 @@ namespace Security_agent
             };
         }
 
+        // Печатает отобранные смены и причины замен.
         private void PrintScheduleClick(object sender, RoutedEventArgs e)
         {
             if (ObjectBox.SelectedItem is not ObjectChoice choice)
