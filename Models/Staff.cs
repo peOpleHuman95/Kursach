@@ -57,6 +57,7 @@ namespace Security_agent
 
         // Право на ношение оружия
         public bool CanCarryWeapon {get; private set;}
+        // Оружие, выданное сотруднику; null означает, что оружие не выдано.
         public Weapon? AssignedWeapon { get; private set; }
 
         // Спецсредства

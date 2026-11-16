@@ -4,11 +4,14 @@ using System.Linq;
 
 namespace Security_agent
 {
-    // Один платеж по договору
+    // Платёж хранит сумму, дату и номер подтверждающего документа.
     public class Payment
     {
+        // Сумма платежа в рублях.
         public decimal Sum {get;}
+        // Дата внесения платежа.
         public DateTime DatePayment {get;}
+        // Номер документа, подтверждающего платёж.
         public string NumberDocument {get;}
         // Проверяет сумму и номер документа и сохраняет данные платежа.
         public Payment (decimal sum, DateTime datePayment, string numberDocument)
@@ -21,15 +24,21 @@ namespace Security_agent
         }
     }
 
-    // Общие данные договора и учет платежей
+    // Базовый договор хранит общие условия, назначенных сотрудников и платежи.
     public abstract class Agreement
     {
+        // Клиент, заключивший договор.
         public Client Client { get; private set; }
+        // Номер договора.
         public string NumberAgreement { get; private set; }
+        // Дата заключения договора.
         public DateTime DateAgreement { get; private set; }
+        // Последний день действия договора.
         public DateTime DateEndContract { get; private set; }
         
+        // Внутренний список платежей; изменяется через методы договора.
         private readonly List<Payment> payments = new List<Payment>();
+        // Платежи договора для просмотра без прямого изменения списка.
         public IReadOnlyList<Payment> Payments => payments.AsReadOnly();
 
         //Сумма всех внесенных платежей по договору
@@ -52,7 +61,7 @@ namespace Security_agent
             DateEndContract = dateEndContract;
 
         }
-        // Добавление платежа с проверкой повтора по номеру и дате документа
+        // Проверяет дату, сумму, состав охраны и остаток; затем сохраняет платёж без дублирования.
         public void AddPayment(Payment payment)
         {
             ArgumentNullException.ThrowIfNull(payment);
@@ -96,17 +105,21 @@ namespace Security_agent
             payments.Add(payment);
         }
 
+        // Внутренний список сотрудников, назначенных на договор.
         private readonly List<Staff> employees = new List<Staff>();
+        // Назначенные сотрудники для просмотра без прямого изменения списка.
         public IReadOnlyList<Staff> Employees => employees.AsReadOnly();
 
-        // Необходимое число охранников по норме выбранного типа услуг
+        // Необходимое число сотрудников рассчитывается отдельно для каждого вида договора.
         public abstract int RequiredStaffCount {get;}
 
-        // Полная стоимость охранны по договору
+        // Возвращает полную стоимость услуги по правилам конкретного договора.
         public abstract decimal CalculateCost();
 
+        // Признак того, что для расчёта назначено необходимое число сотрудников.
         public virtual bool CanCalculateCost => Employees.Count == RequiredStaffCount;
 
+        // Договор можно редактировать, пока по нему нет платежей.
         public bool CanEdit => payments.Count == 0;
 
         // Проверяет допустимость правок и обновляет условия договора.
@@ -139,7 +152,7 @@ namespace Security_agent
         protected abstract void CopyServiceTermsFrom(Agreement edited);
 
 
-        // Назначение охранника на договор
+        // Назначает работающего охранника, если он ещё не назначен и есть свободное место.
         public void AssignEmployee(Staff employee)
         {
             if (employee == null)
@@ -154,7 +167,7 @@ namespace Security_agent
             employees.Add(employee);
         }
 
-        // Снятие сотрудника с договора
+        // Убирает назначенного сотрудника из состава охраны договора.
         public void RemoveEmployee(Staff employee)
         {
             if (employee == null)
@@ -164,7 +177,7 @@ namespace Security_agent
                 throw new InvalidOperationException("Сотрудник не назначен на этот договор.");
         
         }
-        // Меняет назначенного охранника с проверкой состава договора.
+        // Заменяет назначенного охранника другим работающим охранником, которого ещё нет в составе.
         public void ReplaceEmployee(Staff previousEmployee, Staff newEmployee)
         {
             if (previousEmployee == null)
@@ -187,7 +200,7 @@ namespace Security_agent
             employees[index] = newEmployee;
         }
 
-        // Проверка укомплектованности охраны
+        // Проверяет, что назначено ровно столько охранников, сколько требуется по договору.
         protected void CheckStaffing()
         {
             if (employees.Count != RequiredStaffCount)
@@ -211,17 +224,22 @@ namespace Security_agent
     // Договор охраны для разового мероприятия для любого вида клиента
     public class EventAgreement : Agreement
     {
+        // Адрес проведения мероприятия.
         public string EventAddress { get; private set; }
+        // Дата и время начала мероприятия.
         public DateTime DateEvent { get; private set; }
+        // Дата и время окончания мероприятия.
         public DateTime EndEvent { get; private set; }
+        // Описание характера мероприятия.
         public string EventNature { get; private set; }
+        // Количество участников мероприятия.
         public int ParticipantsCount { get; private set; }
 
         // Норма участников на одного охранника
         public int ParticipantsPerGuard { get; private set; }
         // Стоимость часа работы одного охранника для клиента
         public decimal HourlyRate { get; private set; }
-        // Деление с округление вверх
+        // Делит число участников на норму и округляет вверх: даже неполной группе нужен охранник.
         public override int RequiredStaffCount => 1 + (ParticipantsCount - 1) / ParticipantsPerGuard;
         // Проверяет параметры мероприятия и сохраняет условия почасовой охраны.
         public EventAgreement(
@@ -273,7 +291,7 @@ namespace Security_agent
             HourlyRate = terms.HourlyRate;
         }
 
-        // Часы * число назначенных охранников * часовой тариф
+        // Умножает продолжительность мероприятия на число охранников и часовой тариф; округляет до копеек.
         public override decimal CalculateCost()
         {
             CheckStaffing();
@@ -283,7 +301,7 @@ namespace Security_agent
         }
     }
 
-    // Договор охраны объекта юридического лица
+    // Расчётный период: его начало, конец, срок оплаты и сумма начисления.
     public sealed record BillingPeriod(
         DateTime StartDate,
         DateTime EndDate,
@@ -293,13 +311,15 @@ namespace Security_agent
     // Описывает помесячную охрану объекта юридического лица.
     public class ObjectAgreement : Agreement
     {
+        // Адрес охраняемого объекта.
         public string ObjectAddress { get; private set; }
+        // Тип объекта, например склад или магазин.
         public string ObjectType { get; private set; }
 
         // Площадь объекта в квадратных метрах
         public decimal Area { get; private set; }
 
-        // Нормы площади на одного выделенного охранника
+        // Площадь, которую по принятой норме может охранять один сотрудник в смене.
         public decimal AreaPerGuard { get; private set; }
 
         // Месячный тариф за одного выделенного охранника
@@ -308,12 +328,14 @@ namespace Security_agent
         // Число охранников, которые одновременно работают на объекте.
         public int GuardsPerShift => (int)Math.Ceiling(Area / AreaPerGuard);
 
-        // При режиме сутки через двое чередуются три команды.
+        // Для графика сутки через двое нужны до трёх команд; короткий договор требует меньше.
         private int RotationTeams =>
             Math.Min(3, (DateEndContract.Date - DateAgreement.Date).Days + 1);
 
+        // Число сотрудников для всех сменных команд.
         public override int RequiredStaffCount => GuardsPerShift * RotationTeams;
 
+        // Стоимость объекта рассчитывается по условиям договора и до назначения сотрудников.
         public override bool CanCalculateCost => true;
 
 
@@ -361,13 +383,13 @@ namespace Security_agent
             MonthlyRate = terms.MonthlyRate;
         }
 
-        // Вычисляет стоимость охраны по правилам этого вида договора.
+        // Складывает начисления за все расчётные периоды договора.
         public override decimal CalculateCost()
         {
             return GetBillingPeriods().Sum(period => period.Amount);
         }
 
-        // Рассчитывает начисление и срок оплаты для каждого месяца договора.
+        // Разбивает срок договора по месяцам и рассчитывает сумму пропорционально дням и срок оплаты.
         public IEnumerable<BillingPeriod> GetBillingPeriods()
         {
 

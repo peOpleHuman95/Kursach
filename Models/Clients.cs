@@ -7,6 +7,7 @@ namespace Security_agent
     // Общие данные физических и юридических лиц
     public abstract class Client
     {
+        // Адрес клиента, указанный в карточке.
         public string Address {get; private set;} = "";
         // Проверяет и сохраняет адрес при создании клиента.
         protected Client (string address)
@@ -28,6 +29,7 @@ namespace Security_agent
     public class ClientLegalEntity : Client
     {
 
+        // Название организации клиента.
         public string NameFirm {get; private set;} = "";
         
         // Создаёт карточку организации с названием и адресом.
@@ -49,9 +51,13 @@ namespace Security_agent
     // Клиент - Физическое лицо
     public class ClientIndividual : Client
     {
+        // Имя клиента.
         public string FirstName {get; private set;} = "";
+        // Фамилия клиента.
         public string LastName {get; private set;} = "";
+        // Отчество клиента.
         public string MiddleName {get; private set;} = "";
+        // Паспортные данные клиента.
         public string Passport {get; private set;} = "";
 
         // Создаёт карточку физического лица с адресом, ФИО и паспортными данными.

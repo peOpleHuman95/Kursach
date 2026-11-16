@@ -5,14 +5,18 @@ namespace Security_agent
     // Оружие
     public class Weapon : SecurityItem
     {
+        // Марка или модель оружия.
         public string Brand {get; set;} = "";
+        // Регистрационный номер оружия.
         public string RegistrationNumber {get; set;} = "";
 
     }
     // Спецсредство
     public class SpecialEquipment : SecurityItem
     {
+        // Название спецсредства.
         public string Name {get; set;} = "";
+        // Инвентарный номер спецсредства.
         public string InventoryNumber {set; get;} = "";
     }
     // Общие данные оружия и спецсредств
