@@ -8,21 +8,23 @@ namespace Security_agent
     public class FileData
     {
         [JsonRequired]
-        public int Version {get; set;} = 4;
-
-        [JsonRequired]
         public List<PositionData> Positions {get; set;} = new();
 
         [JsonRequired]
         public List<EmployeeData> Employees {get; set;} = new();
         
-        public List<ClientData>? Clients { get; set; }
-        public List<AgreementData>? Agreements { get; set; }
+        [JsonRequired]
+        public List<ClientData> Clients { get; set; } = new();
+        [JsonRequired]
+        public List<AgreementData> Agreements { get; set; } = new();
         
-        public List<DutyShiftData>? Shifts {get; set;}
+        [JsonRequired]
+        public List<DutyShiftData> Shifts { get; set; } = new();
 
-        public List<WeaponData>? Weapons {get; set;}
-        public List<EquipmentsData>? SpecialEquipmentItems {get; set;}
+        [JsonRequired]
+        public List<WeaponData> Weapons { get; set; } = new();
+        [JsonRequired]
+        public List<EquipmentsData> SpecialEquipmentItems { get; set; } = new();
     }
 
     // Хранит параметры должности для сохранения в JSON.
@@ -51,10 +53,6 @@ namespace Security_agent
 
         [JsonRequired]
         public DocumentsData Documents {get; set;} = new();
-
-        public WeaponData? Weapon {get; set;}
-
-        public List<EquipmentsData> Equipment {get; set;} = new();
     }
     // Хранит общие и специальные реквизиты клиента.
     public class ClientData

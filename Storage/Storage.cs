@@ -124,8 +124,8 @@ namespace Security_agent
                 throw new InvalidDataException("Некорректный JSON. Файл не изменен.",error);
             }
 
-            if ((file.Version < 1 || file.Version > 4) || file.Positions == null || file.Employees == null)
-                throw new InvalidDataException("Неизвестный формат файла.");
+            if (file.Positions == null || file.Employees == null)
+                throw new InvalidDataException("В файле отсутствуют должности или сотрудники.");
             
             var data = new AgencyData();
             var positions = new Dictionary<int, Position>();
@@ -150,7 +150,7 @@ namespace Security_agent
             // Затем создаём сотрудников с нужными должностями
             foreach (EmployeeData saved in file.Employees)
             {
-                if (saved == null || saved.Documents == null || saved.Equipment == null)
+                if (saved == null || saved.Documents == null)
                     throw new InvalidDataException("Неполная запись сотрудника.");
                 if (!positions.TryGetValue(saved.PositionId, out Position? position))
                     throw new InvalidDataException("Должность сотрудника не найдена.");
@@ -182,18 +182,12 @@ namespace Security_agent
                     doc.MedicalBook);
                 employee.SetWeaponPermission(saved.CanCarryWeapon);
 
-                if (file.Version < 4)
-                    LoadLegacyEquipment(saved, employee, data);
-
-                
                 data.Employees.Add(employee);
             }
-            if (file.Version >=4) 
-                LoadInventory(file, data);
+            LoadInventory(file, data);
             ValidateInventoryNumbers(data);
             
-            // Увольнение восстанавливаем после сохраненной выдачи снаряжения
-            // Это позволяет прочитать исторические записи старых файлов
+            // Сначала восстанавливаем выдачу снаряжения, затем записываем дату увольнения.
             for (int i = 0; i < file.Employees.Count; i++)
             {
                 if (file.Employees[i].DismissalDate is DateTime date)
@@ -216,8 +210,6 @@ namespace Security_agent
                     throw new InvalidOperationException("Выданное спецсредство отсутствует в общем списке спецсредств.");
             }
 
-                file.Weapons = new List<WeaponData>();
-
                 foreach (Weapon weapon in data.Weapons.Distinct())
                 {
                     if (weapon == null)
@@ -230,8 +222,6 @@ namespace Security_agent
                         AssignedEmployeeId = GetInventoryOwnerId(data, weapon)
                     });
                 }
-                
-                file.SpecialEquipmentItems = new List<EquipmentsData>();
 
                 foreach (SpecialEquipment item in data.SpecialEquipmentItems.Distinct())
                 {
@@ -269,9 +259,6 @@ namespace Security_agent
         private void SaveClientsAndAgreements(FileData file, AgencyData data)
         {
             var clients = data.Clients.Concat(data.Agreements.Select(agreement => agreement.Client)).Distinct().ToList();
-
-            file.Clients = new List<ClientData>();
-            file.Agreements = new List<AgreementData>();
 
             for (int i = 0; i < clients.Count; i++)
             {
@@ -357,37 +344,7 @@ namespace Security_agent
         
         }
 
-        // Загрузка снаряжения из старого формата
-        private void LoadLegacyEquipment(EmployeeData saved, Staff employee, AgencyData data)
-        {
-            if (saved.Weapon != null)
-            {
-                var weapon = new Weapon
-                {
-                    Brand = saved.Weapon.Brand,
-                    RegistrationNumber = saved.Weapon.RegistrationNumber
-                };
-                employee.AssignWeapon(weapon);
-                data.Weapons.Add(weapon);
-            }
-
-            foreach (EquipmentsData savedItem in saved.Equipment)
-            {
-                if (savedItem == null)
-                    throw new InvalidDataException("Пустая запись спецсредства.");
-                
-                var item = new SpecialEquipment
-                {
-                    Name = savedItem.Name,
-                    InventoryNumber = savedItem.InventoryNumber
-                };
-
-                employee.AssignEquipment(item);
-                data.SpecialEquipmentItems.Add(item);
-            }
-        }
-
-        // Загрузка общих списков из нового формата
+        // Загрузка общих списков оружия и спецсредств
         private void LoadInventory(FileData file, AgencyData data)
         {
             if (file.Weapons == null || file.SpecialEquipmentItems == null)
@@ -433,13 +390,6 @@ namespace Security_agent
         // Восстановление клиентов и связей договоров
         private void LoadClientsAndAgreements(FileData file, AgencyData data)
         {
-            if (file.Version == 1 &&
-                file.Clients == null &&
-                file.Agreements == null)
-            {
-                return;
-            }
-
             if (file.Clients == null || file.Agreements == null)
             {
                 throw new InvalidDataException(
@@ -595,8 +545,6 @@ namespace Security_agent
         // Сохранение графика и истории замен
         private void SaveSchedule(FileData file, AgencyData data)
         {
-            file.Shifts = new List<DutyShiftData>();
-
             foreach (DutyShift shift in data.Schedule.Shifts)
             {
                 int index = data.Agreements.IndexOf(shift.Agreement);
@@ -626,8 +574,6 @@ namespace Security_agent
         // Восстановление графиков после загрузки сотрудников и договоров
         private void LoadSchedule(FileData file, AgencyData data)
         {
-            if (file.Version < 3 && file.Shifts == null) return;
-
             if (file.Shifts == null)
                 throw new InvalidDataException("В файле отсутствует график дежурств.");
             
