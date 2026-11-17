@@ -6,7 +6,7 @@ using System.Windows.Controls;
 namespace Security_agent
 {
     // Показывает форму создания, редактирования или просмотра сотрудника.
-    public partial class EmployeeWindow : Window
+    public partial class EmployeeWindow : UserControl
     {
         private readonly AgencyData data;
         private readonly Storage storage;
@@ -30,8 +30,7 @@ namespace Security_agent
             editedEmployee = employee;
             if (employee != null)
             {
-                Title = employee.IsDismissed ? "Архивная карточка сотрудника" : "Карточка сотрудника";
-                Heading.Text = Title;
+                Heading.Text = employee.IsDismissed ? "Архивная карточка сотрудника" : "Карточка сотрудника";
                 LastNameBox.Text = employee.LastName;
                 FirstNameBox.Text = employee.FirstName;
                 MiddleNameBox.Text = employee.MiddleName;
@@ -223,12 +222,12 @@ namespace Security_agent
                 else SaveEditedEmployee(employee);
 
                 CreatedEmployee = editedEmployee ?? employee;
-                DialogResult = true;
+                ((MainWindow)Window.GetWindow(this)).CloseForm(saved: true);
             }
             catch (Exception error)
             {
                 MessageBox.Show(
-                        this,
+                        Window.GetWindow(this),
                         error.Message,
                         "Не удалось добавить сотрудника",
                         MessageBoxButton.OK,
@@ -236,5 +235,9 @@ namespace Security_agent
                 
             }
         }
+
+        // Возвращает в раздел, из которого открыли форму.
+        private void CancelClick(object sender, RoutedEventArgs e) =>
+            ((MainWindow)Window.GetWindow(this)).CloseForm();
     }
 }

@@ -9,7 +9,7 @@ using System.Linq;
 namespace Security_agent
 {
     // Показывает финансовый отчёт по платежам за период.
-    public partial class ReportsWindow : Window
+    public partial class ReportsWindow : UserControl
     {
         private readonly AgencyData data;
         private static readonly CultureInfo RussianCulture = CultureInfo.GetCultureInfo("ru-RU");
@@ -141,7 +141,7 @@ namespace Security_agent
             }
             catch (Exception error)
             {
-                MessageBox.Show(this, error.Message, "Не удалось распечатать отчёт",
+                MessageBox.Show(Window.GetWindow(this), error.Message, "Не удалось распечатать отчёт",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }

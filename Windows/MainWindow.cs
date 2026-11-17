@@ -6,11 +6,13 @@ using System.Windows.Input;
 
 namespace Security_agent
 {
-    // Показывает список сотрудников и открывает остальные разделы программы.
+    // Показывает разделы и формы в одном окне.
     public partial class MainWindow : Window
     {
         private readonly Storage storage = new();
         private AgencyData? data;
+        private Button? activeSectionButton;
+        private Action<bool>? returnFromForm;
         // Хранит значение фильтра должности и его подпись.
         private sealed record PositionFilterChoice(string? Name, string Label);
         private readonly string dataPath = GetDataPath();
@@ -29,7 +31,11 @@ namespace Security_agent
         }
 
         // Подключает разметку окна и подготавливает его к работе.
-        public MainWindow() { InitializeComponent(); }
+        public MainWindow()
+        {
+            InitializeComponent();
+            activeSectionButton = EmployeesButton;
+        }
         // Загружает сотрудников при открытии главного окна.
         private void Window_Loaded(object sender, RoutedEventArgs e) => LoadEmployees();
         // Перечитывает данные сотрудников по кнопке «Обновить».
@@ -126,9 +132,7 @@ namespace Security_agent
         private void AddEmployeeClick(object sender, RoutedEventArgs e)
         {
             if (data == null) return;
-            var window = new EmployeeWindow(data, storage, dataPath) { Owner = this };
-            window.ShowDialog();
-            LoadEmployees();
+            OpenForm("Новый сотрудник", new EmployeeWindow(data, storage, dataPath), _ => LoadEmployees());
         }
         // Открывает карточку выбранного сотрудника.
         private void EditClick(object sender, RoutedEventArgs e)
@@ -139,9 +143,9 @@ namespace Security_agent
                 // Работаем с отдельным графом данных: отмена и ошибка записи не меняют таблицу.
                 AgencyData working = storage.Load(dataPath);
                 int index = data.Employees.IndexOf(selected);
-                var window = new EmployeeWindow(working, storage, dataPath, working.Employees[index]) { Owner = this };
-                window.ShowDialog();
-                LoadEmployees();
+                var employee = working.Employees[index];
+                string title = employee.IsDismissed ? "Архивная карточка сотрудника" : "Карточка сотрудника";
+                OpenForm(title, new EmployeeWindow(working, storage, dataPath, employee), _ => LoadEmployees());
             }
             catch (Exception error) { ShowError(error); }
         }
@@ -169,88 +173,84 @@ namespace Security_agent
         // Показывает сообщение об ошибке.
         private void ShowError(Exception error) => MessageBox.Show(this, error.Message, "Не удалось выполнить действие", MessageBoxButton.OK, MessageBoxImage.Warning);
 
-        // Открывает раздел клиентов.
-        private void OpenClientsClick(object sender, RoutedEventArgs e)
+        // Заменяет содержимое справа и оставляет боковое меню на месте.
+        private void ShowSection(Button button, UserControl? section)
+        {
+            if (activeSectionButton != null)
+                activeSectionButton.Tag = null;
+
+            activeSectionButton = button;
+            button.Tag = "Active";
+            returnFromForm = null;
+
+            DisplayContent(button.Content.ToString()!, section);
+        }
+
+        private void DisplayContent(string title, UserControl? content)
+        {
+            Title = $"Охранное агентство — {title}";
+            EmployeesSection.Visibility = content == null ? Visibility.Visible : Visibility.Collapsed;
+            SectionContent.Content = content;
+        }
+
+        // После закрытия формы показывает прежний экран с его фильтрами и выбором.
+        internal void OpenForm<T>(string title, T form, Action<T>? onSaved = null) where T : UserControl
+        {
+            var section = SectionContent.Content as UserControl;
+            string sectionTitle = activeSectionButton!.Content.ToString()!;
+            returnFromForm = saved =>
+            {
+                DisplayContent(sectionTitle, section);
+                if (saved)
+                    onSaved?.Invoke(form);
+            };
+            DisplayContent(title, form);
+        }
+
+        // При отмене возвращает к разделу без обновления его данных.
+        internal void CloseForm(bool saved = false)
+        {
+            var returnToSection = returnFromForm;
+            returnFromForm = null;
+            returnToSection?.Invoke(saved);
+        }
+
+        private void OpenEmployeesClick(object sender, RoutedEventArgs e)
+        {
+            ShowSection(EmployeesButton, null);
+            LoadEmployees();
+        }
+
+        // При переходе в другой раздел читает актуальные данные с диска.
+        private void OpenSection(object sender, Func<AgencyData, UserControl> createSection)
         {
             try
             {
-                AgencyData working = storage.Load(dataPath);
+                var button = (Button)sender;
+                if (button == activeSectionButton && returnFromForm == null)
+                    return;
 
-                var window = new ClientsWindow(working, storage, dataPath){Owner = this};
-
-                window.ShowDialog();
-                LoadEmployees();
+                ShowSection(button, createSection(storage.Load(dataPath)));
             }
             catch (Exception error)
             {
                 ShowError(error);
             }
         }
-        // Открывает раздел договоров.
-        private void OpenAgreementsClick(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                AgencyData working = storage.Load(dataPath);
 
-                var window = new AgreementsWindow(working, storage, dataPath){Owner = this};
+        private void OpenClientsClick(object sender, RoutedEventArgs e) =>
+            OpenSection(sender, working => new ClientsWindow(working, storage, dataPath));
 
-                window.ShowDialog();
-                LoadEmployees();
-            }
-            catch (Exception error)
-            {
-                ShowError(error);
-            }
-        }
+        private void OpenAgreementsClick(object sender, RoutedEventArgs e) =>
+            OpenSection(sender, working => new AgreementsWindow(working, storage, dataPath));
 
-        // Открывает график дежурств.
-        private void OpenDutyClick(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                AgencyData working = storage.Load(dataPath);
+        private void OpenDutyClick(object sender, RoutedEventArgs e) =>
+            OpenSection(sender, working => new DutyWindow(working, storage, dataPath));
 
-                var window = new DutyWindow(working, storage, dataPath){Owner = this};
+        private void OpenEquipmentClick(object sender, RoutedEventArgs e) =>
+            OpenSection(sender, working => new EquipmentWindow(working, storage, dataPath));
 
-                window.ShowDialog();
-                LoadEmployees();
-            }
-            catch (Exception error)
-            {
-                ShowError(error);
-            }
-        }
-
-        // Открывает учёт снаряжения.
-        private void OpenEquipmentClick(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                var window = new EquipmentWindow(storage.Load(dataPath), storage, dataPath){Owner = this};
-
-                window.ShowDialog();
-                LoadEmployees();
-            }
-            catch (Exception error)
-            {
-                ShowError(error);
-            }
-        }
-
-        // Открывает финансовый отчёт.
-        private void OpenReportsClick(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                var window = new ReportsWindow(storage.Load(dataPath)){Owner = this};
-
-                window.ShowDialog();
-            }
-            catch (Exception error)
-            {
-                ShowError(error);
-            }
-        }
+        private void OpenReportsClick(object sender, RoutedEventArgs e) =>
+            OpenSection(sender, working => new ReportsWindow(working));
     }
 }

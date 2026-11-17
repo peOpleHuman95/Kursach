@@ -5,7 +5,7 @@ using System.Windows.Controls;
 namespace Security_agent
 {
     // Открывает форму создания или редактирования карточки клиента.
-    public partial class ClientEditorWindow : Window
+    public partial class ClientEditorWindow : UserControl
     {
         private readonly AgencyData data;
         private readonly Storage storage;
@@ -27,7 +27,7 @@ namespace Security_agent
             if (client == null)
                 return;
 
-            Title = "Карточка клиента";
+            Heading.Text = "Карточка клиента";
             ClientTypeBox.IsEnabled = false;
             AddressBox.Text = client.Address;
 
@@ -103,11 +103,11 @@ namespace Security_agent
                 }
 
                 SavedClient = savedClient;
-                DialogResult = true;
+                ((MainWindow)Window.GetWindow(this)).CloseForm(saved: true);
             }
             catch (Exception error)
             {
-                MessageBox.Show(this, error.Message, "Не удалось сохранить клиента", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(Window.GetWindow(this), error.Message, "Не удалось сохранить клиента", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 
@@ -133,5 +133,9 @@ namespace Security_agent
 
             target.ChangeAddress(source.Address);  
         }
+
+        // Возвращает в раздел, из которого открыли форму.
+        private void CancelClick(object sender, RoutedEventArgs e) =>
+            ((MainWindow)Window.GetWindow(this)).CloseForm();
     }
 }

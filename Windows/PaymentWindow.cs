@@ -1,11 +1,12 @@
 using System;
 using System.Globalization;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace Security_agent
 {
     // Показывает форму ввода платежа и остаток по договору.
-    public partial class PaymentWindow : Window
+    public partial class PaymentWindow : UserControl
     {
         private static readonly CultureInfo RussianCulture = CultureInfo.GetCultureInfo("ru-RU");
 
@@ -41,15 +42,19 @@ namespace Security_agent
                         throw new ArgumentException("Дата платежа не может быть в будущем.");
                     
                     EnteredPayment = new Payment(amount, date, DocumentNumberBox.Text);
-                    DialogResult = true;
+                    ((MainWindow)Window.GetWindow(this)).CloseForm(saved: true);
             }
             catch (ArgumentException error)
             {
                 MessageBox.Show(
-                    this, error.Message, "Проверьте платёж",
+                    Window.GetWindow(this), error.Message, "Проверьте платёж",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
             }
 
         }
+
+        // Возвращает в раздел, из которого открыли форму.
+        private void CancelClick(object sender, RoutedEventArgs e) =>
+            ((MainWindow)Window.GetWindow(this)).CloseForm();
     }
 }

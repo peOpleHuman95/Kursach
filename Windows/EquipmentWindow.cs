@@ -6,7 +6,7 @@ using System.Linq;
 namespace Security_agent
 {
     // Показывает снаряжение и оформляет его выдачу и возврат.
-    public sealed partial class EquipmentWindow : Window
+    public sealed partial class EquipmentWindow : UserControl
     {
         private AgencyData data;
         private readonly Storage storage;
@@ -147,7 +147,7 @@ namespace Security_agent
             }
             catch (Exception error)
             {
-                MessageBox.Show(this, error.Message, "Снаряжение", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(Window.GetWindow(this), error.Message, "Снаряжение", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }
         }

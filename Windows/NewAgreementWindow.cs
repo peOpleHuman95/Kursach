@@ -7,7 +7,7 @@ using System.Windows.Controls;
 namespace Security_agent
 {
     // Показывает форму создания и редактирования договора.
-    public partial class NewAgreementWindow : Window
+    public partial class NewAgreementWindow : UserControl
     {
         private readonly AgencyData data;
         private readonly Storage storage;
@@ -61,8 +61,7 @@ namespace Security_agent
         // Заполняет поля формы данными существующего договора.
         private void FillEditForm(Agreement agreement)
         {
-            Title = "Редактирование договора";
-            FormTitle.Text = Title;
+            FormTitle.Text = "Редактирование договора";
             NumberBox.Text = agreement.NumberAgreement;
             ContractStartPicker.SelectedDate = agreement.DateAgreement;
             ContractEndPicker.SelectedDate = agreement.DateEndContract;
@@ -100,7 +99,7 @@ namespace Security_agent
                     editingAgreement.ApplyEdit(agreement, data.Schedule);
                     storage.Save(dataPath, data);
                     SavedAgreement = editingAgreement;
-                    DialogResult = true;
+                    ((MainWindow)Window.GetWindow(this)).CloseForm(saved: true);
                     return;
                 }
 
@@ -117,11 +116,11 @@ namespace Security_agent
                 }
 
                 SavedAgreement = agreement;
-                DialogResult = true;
+                ((MainWindow)Window.GetWindow(this)).CloseForm(saved: true);
             }
             catch (Exception error)
             {
-                MessageBox.Show(this, error.Message, "Не удалось сохранить договор", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(Window.GetWindow(this), error.Message, "Не удалось сохранить договор", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 
@@ -247,5 +246,9 @@ namespace Security_agent
 
             ObjectFields.Visibility = isObject ? Visibility.Visible : Visibility.Collapsed;
         }
+
+        // Возвращает в раздел, из которого открыли форму.
+        private void CancelClick(object sender, RoutedEventArgs e) =>
+            ((MainWindow)Window.GetWindow(this)).CloseForm();
     }
 }

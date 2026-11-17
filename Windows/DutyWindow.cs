@@ -8,7 +8,7 @@ using System.Windows.Documents;
 namespace Security_agent
 {
     // Показывает график охраны объектов и позволяет управлять сменами.
-    public partial class DutyWindow : Window
+    public partial class DutyWindow : UserControl
     {
         private AgencyData data;
         private readonly Storage storage;
@@ -334,7 +334,7 @@ namespace Security_agent
             }
             catch (Exception error)
             {
-                MessageBox.Show(this, error.Message, "Не удалось сохранить дежурство", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(Window.GetWindow(this), error.Message, "Не удалось сохранить дежурство", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }
         }
@@ -363,14 +363,14 @@ namespace Security_agent
         {
             if (ObjectBox.SelectedItem is not ObjectChoice choice)
             {
-                MessageBox.Show(this, "Выберите договор на охрану объекта.", "Печать графика");
+                MessageBox.Show(Window.GetWindow(this), "Выберите договор на охрану объекта.", "Печать графика");
                 return;
             }
 
             var rows = ShiftsGrid.Items.OfType<ShiftRow>().ToList();
             if (rows.Count == 0)
             {
-                MessageBox.Show(this, "В таблице нет смен для печати.", "Печать графика");
+                MessageBox.Show(Window.GetWindow(this), "В таблице нет смен для печати.", "Печать графика");
                 return;
             }
 
@@ -454,7 +454,7 @@ namespace Security_agent
             }
             catch (Exception error)
             {
-                MessageBox.Show(this, error.Message, "Не удалось распечатать график",
+                MessageBox.Show(Window.GetWindow(this), error.Message, "Не удалось распечатать график",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }

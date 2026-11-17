@@ -3,11 +3,13 @@ using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
+using System.Windows.Media;
 
 namespace Security_agent
 {
     // Формирует счёт и показывает начисление, оплату и остаток.
-    public partial class InvoiceWindow : Window
+    public partial class InvoiceWindow : UserControl
     {
         private static readonly CultureInfo RussianCulture = CultureInfo.GetCultureInfo("ru-RU");
         // Хранит расчётный период и отнесённую к нему сумму оплаты.
@@ -69,7 +71,87 @@ namespace Security_agent
             BalanceText.Text = remaining == 0 ? "Оплачено полностью" : $"К оплате  {Money(remaining)}";
         }
 
+        // Открывает системную печать, где счёт можно сохранить через Microsoft Print to PDF.
+        private void PrintInvoiceClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var dialog = new PrintDialog();
+                if (dialog.ShowDialog() != true)
+                    return;
+
+                var document = CreatePrintDocument(dialog.PrintableAreaWidth, dialog.PrintableAreaHeight);
+                var paginator = ((IDocumentPaginatorSource)document).DocumentPaginator;
+                dialog.PrintDocument(paginator, "Счёт клиенту");
+            }
+            catch (Exception error)
+            {
+                MessageBox.Show(Window.GetWindow(this), error.Message, "Не удалось распечатать счёт",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
+        // Переносит в печатный документ данные счёта и выбранного расчётного периода.
+        private FlowDocument CreatePrintDocument(double pageWidth, double pageHeight)
+        {
+            var document = new FlowDocument
+            {
+                FontFamily = new FontFamily("Segoe UI"),
+                FontSize = 14,
+                PageWidth = pageWidth,
+                PageHeight = pageHeight,
+                PagePadding = new Thickness(32),
+                ColumnWidth = double.PositiveInfinity
+            };
+
+            document.Blocks.Add(new Paragraph(new Run("Счёт клиенту"))
+            {
+                FontSize = 24,
+                FontWeight = FontWeights.Bold,
+                Foreground = Brushes.MidnightBlue,
+                Margin = new Thickness(0, 0, 0, 12)
+            });
+            document.Blocks.Add(new Paragraph(new Run(ContractText.Text)));
+            document.Blocks.Add(new Paragraph(new Bold(new Run("Клиент")))
+            {
+                Margin = new Thickness(0, 12, 0, 4)
+            });
+            document.Blocks.Add(new Paragraph(new Run(ClientText.Text)));
+            document.Blocks.Add(new Paragraph(new Run(ServiceText.Text)));
+
+            if (PeriodBox.SelectedItem is InvoicePeriod period)
+            {
+                document.Blocks.Add(new Paragraph(new Bold(new Run(ContractTotalText.Text))));
+                document.Blocks.Add(new Paragraph(new Run($"Расчётный период: {period.Label}")));
+                document.Blocks.Add(new Paragraph(new Run(DueText.Text)));
+            }
+
+            document.Blocks.Add(new Paragraph(new Run(AmountText.Text))
+            {
+                BorderBrush = Brushes.LightSteelBlue,
+                BorderThickness = new Thickness(0, 1, 0, 0),
+                Padding = new Thickness(0, 12, 0, 0),
+                Margin = new Thickness(0, 12, 0, 4)
+            });
+            document.Blocks.Add(new Paragraph(new Run(PaidText.Text))
+            {
+                Margin = new Thickness(0, 0, 0, 8)
+            });
+            document.Blocks.Add(new Paragraph(new Run(BalanceText.Text))
+            {
+                FontSize = 20,
+                FontWeight = FontWeights.Bold,
+                Margin = new Thickness(0)
+            });
+
+            return document;
+        }
+
         // Форматирует сумму в рублях.
         private static string Money(decimal amount) => amount.ToString("C2", RussianCulture);
+
+        // Возвращает в раздел, из которого открыли форму.
+        private void CancelClick(object sender, RoutedEventArgs e) =>
+            ((MainWindow)Window.GetWindow(this)).CloseForm();
     }
 }

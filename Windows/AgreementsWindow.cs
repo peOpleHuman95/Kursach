@@ -7,7 +7,7 @@ using System.Windows.Controls;
 namespace Security_agent
 {
     // Показывает договоры и позволяет управлять назначениями и оплатой.
-    public partial class AgreementsWindow : Window
+    public partial class AgreementsWindow : UserControl
     {
         private AgencyData data;
         private readonly Storage storage;
@@ -87,13 +87,13 @@ namespace Security_agent
         {
             if (data.Clients.Count == 0)
             {
-                MessageBox.Show(this, "Сначала добавьте клиента в разделе «Клиенты».", "Новый договор");
+                MessageBox.Show(Window.GetWindow(this), "Сначала добавьте клиента в разделе «Клиенты».", "Новый договор");
                 return;
             }
 
-            var window = new NewAgreementWindow(data, storage, dataPath) { Owner = this };
-            if (window.ShowDialog() == true)
-                RefreshAgreements(window.SavedAgreement);
+            var form = new NewAgreementWindow(data, storage, dataPath);
+            ((MainWindow)Window.GetWindow(this)).OpenForm("Новый договор", form,
+                saved => RefreshAgreements(saved.SavedAgreement));
         }
 
         // Обновляет карточку и назначения при выборе договора.
@@ -274,21 +274,17 @@ namespace Security_agent
                 if (!agreement.CanEdit)
                     throw new InvalidOperationException("Договор с платежами нельзя редактировать.");
 
-                var window = new NewAgreementWindow(working, storage, dataPath, agreement)
-                {
-                    Owner = this
-                };
-
-                if (window.ShowDialog() == true)
+                var form = new NewAgreementWindow(working, storage, dataPath, agreement);
+                ((MainWindow)Window.GetWindow(this)).OpenForm("Редактирование договора", form, saved =>
                 {
                     data = working;
-                    RefreshAgreements(window.SavedAgreement);
-                }
+                    RefreshAgreements(saved.SavedAgreement);
+                });
             }
             catch (Exception error)
             {
                 MessageBox.Show(
-                    this, error.Message, "Не удалось открыть договор для редактирования",
+                    Window.GetWindow(this), error.Message, "Не удалось открыть договор для редактирования",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
@@ -298,7 +294,7 @@ namespace Security_agent
         {
             if (AgreementsGrid.SelectedItem is not AgreementBox row)
             {
-                MessageBox.Show(this, "Выбери договор в таблице.", "Состав охраны");
+                MessageBox.Show(Window.GetWindow(this), "Выбери договор в таблице.", "Состав охраны");
                 return;
             }
 
@@ -320,7 +316,7 @@ namespace Security_agent
             catch (Exception error)
             {
                 MessageBox.Show(
-                    this, error.Message, "Не удалось изменить договор",
+                    Window.GetWindow(this), error.Message, "Не удалось изменить договор",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
@@ -331,11 +327,8 @@ namespace Security_agent
             if (AgreementsGrid.SelectedItem is not AgreementBox row || !row.Agreement.CanCalculateCost)
                 return;
 
-            var window = new InvoiceWindow(row.Agreement, GetClientName(row.Agreement.Client))
-            {
-                Owner = this
-            };
-            window.ShowDialog();
+            var invoice = new InvoiceWindow(row.Agreement, GetClientName(row.Agreement.Client));
+            ((MainWindow)Window.GetWindow(this)).OpenForm("Счёт клиенту", invoice);
         }
 
         // Открывает ввод платежа и сохраняет его после подтверждения.
@@ -343,7 +336,7 @@ namespace Security_agent
         {
             if (AgreementsGrid.SelectedItem is not AgreementBox row)
             {
-                MessageBox.Show(this, "Выберите договор в таблице.", "Оплата");
+                MessageBox.Show(Window.GetWindow(this), "Выберите договор в таблице.", "Оплата");
                 return;
             }
             try
@@ -355,20 +348,20 @@ namespace Security_agent
 
                 if (remaining <= 0)
                 {
-                    MessageBox.Show(this, "Договор уже оплачен", "Оплата");
+                    MessageBox.Show(Window.GetWindow(this), "Договор уже оплачен", "Оплата");
                     return;
                 }
 
-                var window = new PaymentWindow(row.Agreement, remaining){Owner = this};
-
-                if (window.ShowDialog() == true && window.EnteredPayment is Payment payment)
+                var form = new PaymentWindow(row.Agreement, remaining);
+                ((MainWindow)Window.GetWindow(this)).OpenForm("Добавить платёж", form, saved =>
                 {
-                    SaveAgreementChange((agreement, working) => agreement.AddPayment(payment));
-                }
+                    if (saved.EnteredPayment is Payment payment)
+                        SaveAgreementChange((agreement, working) => agreement.AddPayment(payment));
+                });
             }
             catch (Exception error)
             {
-                MessageBox.Show(this, error.Message, "Не удалось открыть оплату", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(Window.GetWindow(this), error.Message, "Не удалось открыть оплату", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
         // Формирует сведения о начислениях, остатке и платежах.

@@ -6,7 +6,7 @@ using System.Windows.Controls;
 namespace Security_agent
 {
     // Показывает список клиентов и открывает их карточки.
-    public partial class ClientsWindow : Window
+    public partial class ClientsWindow : UserControl
     {
         private readonly AgencyData data;
         private readonly Storage storage;
@@ -69,9 +69,9 @@ namespace Security_agent
         // Открывает форму клиента и обновляет таблицу после сохранения.
         private void OpenEditor(Client? client)
         {
-            var editor = new ClientEditorWindow(data, storage, dataPath, client) { Owner = this };
-            if (editor.ShowDialog() == true)
-                RefreshClients(editor.SavedClient);
+            var editor = new ClientEditorWindow(data, storage, dataPath, client);
+            string title = client == null ? "Новый клиент" : "Карточка клиента";
+            ((MainWindow)Window.GetWindow(this)).OpenForm(title, editor, saved => RefreshClients(saved.SavedClient));
         }
     }
 }
