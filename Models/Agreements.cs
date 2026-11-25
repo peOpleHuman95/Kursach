@@ -79,13 +79,17 @@ namespace Security_agent
             if (remaining <= 0)
                 throw new InvalidOperationException("Договор уже оплачен.");
 
-            if (this is EventAgreement && (Payments.Count > 0 || payment.Sum != total))
-                throw new InvalidOperationException("Мероприятие нужно оплатить одним платежом на полную сумму.");
+            ValidatePaymentTerms(payment, total);
 
             if (payment.Sum > remaining)
                 throw new ArgumentException("Сумма платежа превышает остаток.");
 
             RestorePayment(payment);
+        }
+
+        // Здесь наследник может добавить свои условия оплаты.
+        protected virtual void ValidatePaymentTerms(Payment payment, decimal total)
+        {
         }
 
         // Восстановление ранее записанного платежа с проверкой дублей.
@@ -289,6 +293,13 @@ namespace Security_agent
             ParticipantsCount = terms.ParticipantsCount;
             ParticipantsPerGuard = terms.ParticipantsPerGuard;
             HourlyRate = terms.HourlyRate;
+        }
+
+        // Охрана мероприятия оплачивается одним платежом на полную сумму.
+        protected override void ValidatePaymentTerms(Payment payment, decimal total)
+        {
+            if (Payments.Count > 0 || payment.Sum != total)
+                throw new InvalidOperationException("Мероприятие нужно оплатить одним платежом на полную сумму.");
         }
 
         // Умножает продолжительность мероприятия на число охранников и часовой тариф; округляет до копеек.
